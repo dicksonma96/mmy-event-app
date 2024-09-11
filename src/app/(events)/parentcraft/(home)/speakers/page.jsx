@@ -38,7 +38,7 @@ function Speakers() {
         ))}
       </div>
       <br />
-      <div className="section_title">OUR SPEAKERS</div>
+      <div className="section_title">OUR SPONSORS</div>
     </>
   );
 }

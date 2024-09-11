@@ -10,7 +10,7 @@ $max-width: 600px;
 }
 
 .event {
-  background-color: #ff8282;
+  background-color: $accent1;
 }
 
 .parentcraft {
@@ -147,6 +147,7 @@ $max-width: 600px;
       color: $accent2;
       margin-bottom: 0.5em;
       font-weight: bold;
+      text-transform: uppercase;
     }
   }
 
