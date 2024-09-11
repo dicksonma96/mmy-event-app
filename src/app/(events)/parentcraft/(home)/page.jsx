@@ -13,7 +13,7 @@ async function Agenda() {
       endTime: "09:00AM",
     },
     {
-      agenda: "Arrival & Registration",
+      agenda: "Arrival & Registration 2",
       desc: "Refreshment served upon arrival. Guests directed to their seats.",
       startTime: "08:30AM",
       endTime: "09:00AM",
