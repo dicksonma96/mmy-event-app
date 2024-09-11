@@ -1,0 +1,42 @@
+$max-width: 600px;
+
+body {
+  font-size: 16px;
+}
+
+.event {
+  min-height: 100vh;
+  background-image: url("../../assets/img/logo_bg.png");
+  background-size: 60px;
+}
+
+.app {
+  background: white;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    font-size: 2.7vw;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    font-size: 2.7vw;
+  }
+}
+
+// @media (min-aspect-ratio: 821/1180) {
+//   body {
+//     font-size: 1vh;
+//   }
+//   .app {
+//     min-height: 100vh;
+//     width: 50vh;
+//   }
+// }

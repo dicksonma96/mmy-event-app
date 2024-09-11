@@ -1,0 +1,359 @@
+$accent1: #ff8282;
+$accent2: #265e70;
+$accent3: #747382;
+$black: #242424;
+
+$max-width: 600px;
+
+.material-symbols-outlined {
+  font-size: 2em;
+}
+
+.event {
+  background-color: #ff8282;
+}
+
+.parentcraft {
+  position: relative;
+
+  * {
+    accent-color: $accent1;
+  }
+
+  .label {
+    color: $accent3;
+  }
+  input {
+    padding: 0.5em;
+    background-color: #f8f2f4;
+    border: solid 1px #e3e3e6;
+    color: black;
+    font-size: 1.4em;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .btn1 {
+    background-color: $accent1;
+    color: white;
+    padding: 0.8em 2em;
+    border-radius: 0 1em 1em 1em;
+    border: none;
+    font-size: 1.2em;
+  }
+  .btn_cancel {
+    @extend .btn1;
+    background-color: #c1c1c1;
+  }
+
+  .menu {
+    position: fixed;
+    background: white;
+    bottom: 0;
+    left: 50%;
+    translate: -50% 0;
+    width: 100%;
+    max-width: $max-width;
+    border-top: 0.1em solid #e3e3e6;
+    padding: 1em;
+    justify-content: space-around;
+    z-index: 10;
+
+    .menu_item {
+      justify-content: center;
+      padding: 1em;
+      color: $accent3;
+      border-radius: 0.5em;
+      &:hover {
+        background: rgba(50, 50, 50, 0.1);
+      }
+    }
+    .active {
+      color: $accent1;
+    }
+  }
+
+  .banner {
+    position: relative;
+    img {
+      width: 100%;
+      height: auto;
+    }
+    .info {
+      position: absolute;
+      left: 38%;
+      top: 22%;
+      h3 {
+        color: $accent1;
+        font-size: 1.5em;
+      }
+      h2 {
+        color: $accent2;
+        font-size: 1.5em;
+      }
+
+      .date {
+        background-color: $accent2;
+        color: white;
+        font-size: 1em;
+        padding: 0.5em 1em;
+        align-self: start;
+        border-radius: 0 1em 1em 1em;
+        margin-top: 0.5em;
+      }
+    }
+  }
+
+  .home_nav {
+    background-color: $accent1;
+    width: 90%;
+    align-self: center;
+    margin-top: -4em;
+    z-index: 2;
+    padding: 0.5em;
+    border-radius: 1em;
+    .nav_item {
+      align-items: center;
+      color: white;
+      flex: 1;
+      gap: 0.5em;
+      padding: 1em;
+      border-radius: 0.75em;
+
+      img {
+        width: 4em;
+        background: white;
+        border-radius: 99em;
+      }
+      span {
+        font-size: 0.9em;
+        text-transform: uppercase;
+      }
+    }
+    .nav_active {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .section {
+    width: 90%;
+    align-self: center;
+    margin-top: 2em;
+    margin-bottom: 8em;
+    .section_title {
+      font-size: 1.2em;
+      color: $accent2;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+    }
+  }
+
+  .agenda_list {
+    padding: 1em;
+    border: solid 0.1em #e3e3e6;
+    border-radius: 0 1em 1em 1em;
+
+    .agenda {
+      border-bottom: solid 0.1em #e3e3e6;
+      padding: 2em 1em;
+
+      .time {
+        color: white;
+        padding: 0.5em 1em;
+        align-self: flex-start;
+        gap: 0.2em;
+        border-radius: 0 1em 1em 1em;
+        margin-bottom: 0.5em;
+        letter-spacing: 0.1em;
+        font-size: 0.85em;
+        border: solid 0.1em $accent1;
+        color: $accent1;
+        font-weight: bold;
+      }
+      h2 {
+        color: $black;
+      }
+      p {
+        color: #6b6b78;
+        margin-top: 0.2em;
+      }
+
+      &:last-child {
+        border: none;
+      }
+      &:first-child {
+        padding-top: 1em;
+      }
+    }
+  }
+  .speaker_list {
+    border-radius: 0 1em 1em 1em;
+    gap: 0.5em;
+
+    .speaker {
+      padding: 1em;
+      align-items: center;
+      border: solid 0.1em #e3e3e6;
+
+      &:first-child {
+        border-radius: 0 1em 0 0;
+      }
+      &:last-child {
+        border-radius: 0 0 1em 1em;
+      }
+
+      img {
+        margin-right: 1.5em;
+        width: 5em;
+        border-radius: 10em;
+        border: solid 0.1em #e3e3e6;
+      }
+      h2 {
+        color: $accent1;
+        margin-bottom: 0.2em;
+        font-size: 1.2em;
+      }
+      p {
+        color: #747382;
+      }
+    }
+  }
+
+  .carousel {
+    width: 100%;
+    margin-bottom: 2em;
+    border-radius: 1em;
+    .slick-slide > div {
+      margin-right: 1em;
+    }
+    .slide {
+      width: 100%;
+      img {
+        width: 100%;
+      }
+    }
+    .slick-dots {
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.5em;
+      bottom: -1em;
+      right: 1em;
+      li {
+        background-color: rgba(0, 0, 0, 0.2);
+        margin: 0;
+        width: 0.8em;
+        height: 0.8em;
+        border-radius: 1em;
+
+        button {
+          width: 100%;
+          height: 100%;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+
+      li.slick-active {
+        background-color: $accent1;
+      }
+    }
+  }
+}
+
+.chatroom {
+  flex: 1;
+  background-color: #ede8e8;
+  .chat_header {
+    background: white;
+    padding: 1em;
+
+    .icon {
+      align-items: center;
+      justify-content: center;
+      background: $accent1;
+      width: 3em;
+      height: 3em;
+      border-radius: 0.3em;
+      margin-right: 1em;
+      span {
+        font-size: 1.75em;
+        color: white;
+        margin-bottom: -0.1em;
+      }
+    }
+    .header_text {
+      align-self: center;
+      .status {
+        color: green;
+      }
+    }
+  }
+
+  .start_chat {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10em;
+
+    img {
+      width: 20em;
+      margin-bottom: 2em;
+    }
+    h2 {
+      font-size: 3em;
+      text-align: center;
+      color: $accent2;
+    }
+    p {
+      font-size: 1.1em;
+      color: $accent3;
+    }
+    .btn1 {
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+  }
+}
+
+.overlay_modal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: grid;
+  place-items: center;
+
+  .modal {
+    width: 80%;
+    background: white;
+    padding: 1em;
+    border-radius: 1em;
+  }
+}
+
+.name_modal {
+  .label {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+  }
+  .anony {
+    align-self: flex-end;
+    margin-top: 1em;
+    gap: 0.5em;
+    color: $accent3;
+    align-items: center;
+  }
+  .btns {
+    justify-content: flex-end;
+    gap: 1em;
+    margin-top: 2em;
+  }
+}

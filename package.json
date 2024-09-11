@@ -9,8 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "mongodb": "^6.8.1",
+    "next": "14.2.7",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.7"
+    "react-slick": "^0.30.2",
+    "sass": "^1.78.0",
+    "slick-carousel": "^1.8.1"
   }
 }
