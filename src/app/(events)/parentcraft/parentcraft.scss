@@ -47,6 +47,13 @@ $max-width: 600px;
     @extend .btn1;
     background-color: #c1c1c1;
   }
+  //stroke button
+  .s_btn {
+    @extend .btn1;
+    background: none;
+    border: solid 0.1em currentColor;
+    color: $accent1;
+  }
 
   .menu {
     position: fixed;
@@ -197,6 +204,7 @@ $max-width: 600px;
       padding: 1em;
       align-items: center;
       border: solid 0.1em #e3e3e6;
+      background: linear-gradient(white, #f1f1f5);
 
       &:first-child {
         border-radius: 0 1em 0 0;
@@ -317,6 +325,84 @@ $max-width: 600px;
     .btn1 {
       margin-top: 1em;
       font-size: 1.2em;
+    }
+  }
+
+  .chat_body {
+    flex: 1;
+    padding-bottom: 6em;
+    max-height: calc(100vh - 5em);
+    .chat_log {
+      flex: 1;
+      padding: 1em;
+      gap: 0.2em;
+      align-items: flex-start;
+      overflow: auto;
+      flex-direction: column-reverse;
+      .chatbox {
+        background-color: #ffffff;
+        padding: 0.5em;
+        border-radius: 0.5em;
+
+        .name {
+          color: $accent1;
+          font-weight: bold;
+          display: none;
+        }
+      }
+      .last {
+        border-top-left-radius: 0;
+        margin-top: 1em;
+        .name {
+          display: block;
+        }
+      }
+
+      .my_msg {
+        align-self: flex-end;
+      }
+      .my_msg.last {
+        border-top-left-radius: 0.5em;
+        border-top-right-radius: 0;
+      }
+    }
+    .chat_input {
+      background-color: white;
+      margin: 1em auto 2em;
+      width: calc(100% - 2em);
+      padding: 1em;
+      border-radius: 1em;
+
+      textarea {
+        background-color: #f4f2ee;
+        border: none;
+        padding: 1em;
+        border-radius: 0.5em;
+      }
+
+      .chat_toolbar {
+        align-items: center;
+        margin-top: 1em;
+        .shortcut_btns {
+          margin-right: auto;
+          gap: 0.5em;
+          .shortcut {
+            font-size: 1em;
+            font-weight: bold;
+            padding: 0.5em 1em;
+          }
+        }
+        .send_btn {
+          font-size: 1em;
+          padding: 0.5em;
+          min-width: 7em;
+          text-align: center;
+
+          &:disabled {
+            opacity: 0.5;
+          }
+        }
+      }
     }
   }
 }
