@@ -5,10 +5,11 @@ import Image from "next/image";
 import Modal from "../component/Modal";
 import { useChannel } from "ably/react";
 import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
-import getCookie from "@/lib/getCookie";
-import setCookie from "@/lib/setCookie";
+import { getCookie, setCookie, hasCookie } from "cookies-next";
+import daysToSeconds from "@/lib/daysToSeconds";
 
 function Chat() {
+  const [mounted, setMounted] = useState(false);
   const [name, setName] = useState(null);
   const [nameModal, setNameModal] = useState(false);
   const [chatAnony, setChatAnony] = useState(false);
@@ -36,8 +37,9 @@ function Chat() {
   useEffect(() => {
     setName(getCookie("parentcraft_chat_name"));
     fetchHistoryMsg();
-
+    setMounted(true);
     return () => {
+      setMounted(false);
       channel.unsubscribe();
     };
   }, []);
@@ -51,7 +53,7 @@ function Chat() {
         const formData = new FormData(e.target);
         const _name = formData.get("name");
         setName(_name);
-        setCookie("parentcraft_chat_name", _name, 1);
+        setCookie("parentcraft_chat_name", _name, { maxAge: daysToSeconds(1) });
       }
       setNameModal(false);
     }
@@ -76,20 +78,26 @@ function Chat() {
             <span className="status">0 online</span>
           </div>
         </div>
-        {name ? (
-          <div className="chat_body col">
-            <ChatLog chatLog={chatLog} />
-            <ChatInput SendMessage={SendMessage} />
-          </div>
-        ) : (
-          <div className="start_chat col">
-            <Image src={ChatIllustration} alt="chat" />
-            <h2>JOIN THE CONVERSATION!</h2>
-            <p>Be Part of the Discussion: Enter the Chat Now!</p>
-
-            <div className="btn1" onClick={showNameModal}>
-              Chat Now
+        {mounted ? (
+          name ? (
+            <div className="chat_body col">
+              <ChatLog chatLog={chatLog} />
+              <ChatInput SendMessage={SendMessage} />
             </div>
+          ) : (
+            <div className="start_chat col">
+              <Image src={ChatIllustration} alt="chat" />
+              <h2>JOIN THE CONVERSATION!</h2>
+              <p>Be Part of the Discussion: Enter the Chat Now!</p>
+
+              <div className="btn1" onClick={showNameModal}>
+                Chat Now
+              </div>
+            </div>
+          )
+        ) : (
+          <div style={{ display: "grid", placeItems: "center", flex: 1 }}>
+            Connecting...
           </div>
         )}
       </div>
