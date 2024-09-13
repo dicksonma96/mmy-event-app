@@ -7,6 +7,8 @@ import { useChannel } from "ably/react";
 import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";
+import "./chat.css";
+import epochToDateTime from "@/lib/epochToDateTime";
 
 function Chat() {
   const [mounted, setMounted] = useState(false);
@@ -15,7 +17,7 @@ function Chat() {
   const [chatAnony, setChatAnony] = useState(false);
   const [chatLog, setChatLog] = useState([]);
 
-  const { ably, channel, publish, connectionError, channelError } = useChannel(
+  const { channel, publish, connectionError, channelError } = useChannel(
     PARENTCRAFT_ABLY_CHAT_CHANNEL,
     (message) => {
       setChatLog((prev) => [message, ...prev]);
@@ -174,6 +176,7 @@ function ChatLog({ chatLog }) {
           >
             <div className="name">{info.data.username || "Anonymous"}</div>
             <div className="message">{info.data.message}</div>
+            <div className="time">{epochToDateTime(info.timestamp).time}</div>
           </div>
         );
       })}
@@ -183,7 +186,9 @@ function ChatLog({ chatLog }) {
 
 function ChatInput({ SendMessage }) {
   const [msg, setMsg] = useState("");
+  const inputRef = useRef(null);
   const handleSend = async () => {
+    inputRef.current.blur();
     try {
       await SendMessage({
         message: msg,
@@ -197,6 +202,7 @@ function ChatInput({ SendMessage }) {
   return (
     <div className="chat_input col">
       <textarea
+        ref={inputRef}
         placeholder="Write a message..."
         value={msg}
         onChange={(e) => {

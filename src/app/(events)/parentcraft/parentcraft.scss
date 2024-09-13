@@ -332,6 +332,7 @@ $max-width: 600px;
     flex: 1;
     padding-bottom: 6em;
     max-height: calc(100vh - 5em);
+    max-height: calc(100dvh - 5em);
     .chat_log {
       flex: 1;
       padding: 1em;
@@ -341,18 +342,42 @@ $max-width: 600px;
       flex-direction: column-reverse;
       .chatbox {
         background-color: #ffffff;
-        padding: 0.5em;
+        padding: 0.7em;
         border-radius: 0.5em;
+        max-width: 25em;
+        position: relative;
 
         .name {
           color: $accent1;
           font-weight: bold;
           display: none;
+          font-size: 1.2em;
+          margin-bottom: 0.2em;
+        }
+        .message {
+          font-size: 1.2em;
+        }
+        .time {
+          margin-top: 0.5em;
+          align-self: flex-end;
+          color: $accent3;
+          font-size: 0.9em;
         }
       }
       .last {
         border-top-left-radius: 0;
         margin-top: 1em;
+        // &::after {
+        //   content: "";
+        //   width: 0;
+        //   height: 0;
+        //   border-left: 1em solid transparent;
+        //   border-right: 1em solid transparent;
+        //   border-top: 1em solid white;
+        //   position: absolute;
+        //   top: 0;
+        //   left: -0.5em;
+        // }
         .name {
           display: block;
         }
@@ -360,10 +385,32 @@ $max-width: 600px;
 
       .my_msg {
         align-self: flex-end;
+        background-color: $accent1;
+        color: white;
+
+        .name {
+          color: white;
+          display: none;
+        }
+        .time {
+          color: white;
+        }
       }
       .my_msg.last {
         border-top-left-radius: 0.5em;
         border-top-right-radius: 0;
+        // &::after {
+        //   content: "";
+        //   width: 0;
+        //   height: 0;
+        //   border-left: 1em solid transparent;
+        //   border-right: 1em solid transparent;
+        //   border-top: 1em solid $accent1;
+        //   position: absolute;
+        //   top: 0;
+        //   left: auto;
+        //   right: -0.5em;
+        // }
       }
     }
     .chat_input {
@@ -378,6 +425,7 @@ $max-width: 600px;
         border: none;
         padding: 1em;
         border-radius: 0.5em;
+        font-size: clamp(16px, 1em, 1em);
       }
 
       .chat_toolbar {
@@ -393,7 +441,7 @@ $max-width: 600px;
           }
         }
         .send_btn {
-          font-size: 1em;
+          font-size: 1.1em;
           padding: 0.5em;
           min-width: 7em;
           text-align: center;
