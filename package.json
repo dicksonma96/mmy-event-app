@@ -16,9 +16,12 @@
     "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
+    "react-flip-toolkit": "^7.2.4",
+    "react-paginate": "^8.2.0",
     "react-slick": "^0.30.2",
     "sass": "^1.78.0",
     "slick-carousel": "^1.8.1",
+    "uid": "^2.0.2",
     "uuid": "^10.0.0"
   }
 }

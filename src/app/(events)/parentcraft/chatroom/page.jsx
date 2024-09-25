@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ChatIllustration from "@/assets/img/parentcraft/chat_illustration.png";
 import Image from "next/image";
 import Modal from "../component/Modal";
-import { useChannel } from "ably/react";
+import { useChannel, usePresenceListener, usePresence } from "ably/react";
 import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";
@@ -23,6 +23,8 @@ function Chat() {
       setChatLog((prev) => [message, ...prev]);
     }
   );
+  const { updateStatus } = usePresence(PARENTCRAFT_ABLY_CHAT_CHANNEL, "online");
+  const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
 
   const fetchHistoryMsg = async () => {
     let res = await channel.history({ limit: 10 });
@@ -46,11 +48,18 @@ function Chat() {
     };
   }, []);
 
+  const SendMessage = (message) => {
+    publish("chat-message", {
+      username: name,
+      ...message,
+    });
+  };
+
   const setChatName = (e) => {
     if (e.target.checkValidity()) {
       e.preventDefault();
       if (chatAnony) {
-        setName("Anonymous");
+        setName("Guest" + " " + getCookie("parentcraft_uid").slice(0, 5));
       } else {
         const formData = new FormData(e.target);
         const _name = formData.get("name");
@@ -61,12 +70,13 @@ function Chat() {
     }
   };
 
-  const SendMessage = (message) => {
-    publish("chat-message", {
-      username: name,
-      ...message,
-    });
-  };
+  useEffect(() => {
+    if (name) {
+      SendMessage({
+        announcement: `${name} joined the chatroom`,
+      });
+    }
+  }, [name]);
 
   return (
     <>
@@ -77,7 +87,7 @@ function Chat() {
           </div>
           <div className="header_text col">
             <span>Parentcraft Chatroom</span>
-            <span className="status">0 online</span>
+            <span className="status">{presenceData?.length} online</span>
           </div>
         </div>
         {mounted ? (
@@ -167,6 +177,13 @@ function ChatLog({ chatLog }) {
           msg_status = "last";
         }
 
+        if (info.data.hasOwnProperty("announcement")) {
+          return (
+            <div key={index} className="announcement">
+              {info.data.announcement}
+            </div>
+          );
+        }
         return (
           <div
             key={index}
@@ -187,6 +204,7 @@ function ChatLog({ chatLog }) {
 function ChatInput({ SendMessage }) {
   const [msg, setMsg] = useState("");
   const inputRef = useRef(null);
+
   const handleSend = async () => {
     inputRef.current.blur();
     try {
@@ -194,6 +212,16 @@ function ChatInput({ SendMessage }) {
         message: msg,
       });
       setMsg("");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleEmote = async (emote) => {
+    try {
+      await SendMessage({
+        message: emote,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -216,8 +244,12 @@ function ChatInput({ SendMessage }) {
       />
       <div className="chat_toolbar row">
         <div className="shortcut_btns row">
-          <div className="shortcut s_btn">👏Applause!</div>
-          <div className="shortcut s_btn">❤️ Love It!</div>
+          <div className="shortcut s_btn" onClick={() => handleEmote("👏")}>
+            👏Applause!
+          </div>
+          <div className="shortcut s_btn" onClick={() => handleEmote("❤️")}>
+            ❤️ Love It!
+          </div>
         </div>
         <button className="send_btn btn1" disabled={!msg} onClick={handleSend}>
           Send ➤

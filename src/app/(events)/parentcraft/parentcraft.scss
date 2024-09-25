@@ -126,7 +126,7 @@ $max-width: 600px;
       color: white;
       flex: 1;
       gap: 0.5em;
-      padding: 1em;
+      padding: 1em 0;
       border-radius: 0.75em;
 
       img {
@@ -135,7 +135,7 @@ $max-width: 600px;
         border-radius: 99em;
       }
       span {
-        font-size: 0.9em;
+        font-size: 0.8em;
         text-transform: uppercase;
       }
     }
@@ -340,6 +340,17 @@ $max-width: 600px;
       align-items: flex-start;
       overflow: auto;
       flex-direction: column-reverse;
+
+      .announcement {
+        align-self: center;
+        padding: 0.2em 1em;
+        background-color: #f4f2ee;
+        color: grey;
+        border-radius: 1em;
+        margin: 0.2em 0;
+        font-size: 0.8em;
+      }
+
       .chatbox {
         background-color: #ffffff;
         padding: 0.7em;
@@ -438,6 +449,12 @@ $max-width: 600px;
             font-size: 1em;
             font-weight: bold;
             padding: 0.5em 1em;
+            cursor: pointer;
+
+            &:hover {
+              background-color: $accent1;
+              color: white;
+            }
           }
         }
         .send_btn {

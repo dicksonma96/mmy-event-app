@@ -19,8 +19,8 @@ function HomeNav() {
     },
     {
       icon: Speakers,
-      route: basePath + "/speakers",
-      module: "Speakers",
+      route: basePath + "/contributors",
+      module: "Contributors",
     },
     {
       icon: Events,
