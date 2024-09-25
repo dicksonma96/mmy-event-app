@@ -10,7 +10,7 @@ $max-width: 600px;
 }
 
 .event {
-  background-color: #ff8282;
+  background-color: $accent1;
 }
 
 .parentcraft {
@@ -46,6 +46,13 @@ $max-width: 600px;
   .btn_cancel {
     @extend .btn1;
     background-color: #c1c1c1;
+  }
+  //stroke button
+  .s_btn {
+    @extend .btn1;
+    background: none;
+    border: solid 0.1em currentColor;
+    color: $accent1;
   }
 
   .menu {
@@ -119,7 +126,7 @@ $max-width: 600px;
       color: white;
       flex: 1;
       gap: 0.5em;
-      padding: 1em;
+      padding: 1em 0;
       border-radius: 0.75em;
 
       img {
@@ -128,7 +135,7 @@ $max-width: 600px;
         border-radius: 99em;
       }
       span {
-        font-size: 0.9em;
+        font-size: 0.8em;
         text-transform: uppercase;
       }
     }
@@ -147,6 +154,7 @@ $max-width: 600px;
       color: $accent2;
       margin-bottom: 0.5em;
       font-weight: bold;
+      text-transform: uppercase;
     }
   }
 
@@ -196,6 +204,7 @@ $max-width: 600px;
       padding: 1em;
       align-items: center;
       border: solid 0.1em #e3e3e6;
+      background: linear-gradient(white, #f1f1f5);
 
       &:first-child {
         border-radius: 0 1em 0 0;
@@ -316,6 +325,149 @@ $max-width: 600px;
     .btn1 {
       margin-top: 1em;
       font-size: 1.2em;
+    }
+  }
+
+  .chat_body {
+    flex: 1;
+    padding-bottom: 6em;
+    max-height: calc(100vh - 5em);
+    max-height: calc(100dvh - 5em);
+    .chat_log {
+      flex: 1;
+      padding: 1em;
+      gap: 0.2em;
+      align-items: flex-start;
+      overflow: auto;
+      flex-direction: column-reverse;
+
+      .announcement {
+        align-self: center;
+        padding: 0.2em 1em;
+        background-color: #f4f2ee;
+        color: grey;
+        border-radius: 1em;
+        margin: 0.2em 0;
+        font-size: 0.8em;
+      }
+
+      .chatbox {
+        background-color: #ffffff;
+        padding: 0.7em;
+        border-radius: 0.5em;
+        max-width: 25em;
+        position: relative;
+
+        .name {
+          color: $accent1;
+          font-weight: bold;
+          display: none;
+          font-size: 1.2em;
+          margin-bottom: 0.2em;
+        }
+        .message {
+          font-size: 1.2em;
+        }
+        .time {
+          margin-top: 0.5em;
+          align-self: flex-end;
+          color: $accent3;
+          font-size: 0.9em;
+        }
+      }
+      .last {
+        border-top-left-radius: 0;
+        margin-top: 1em;
+        // &::after {
+        //   content: "";
+        //   width: 0;
+        //   height: 0;
+        //   border-left: 1em solid transparent;
+        //   border-right: 1em solid transparent;
+        //   border-top: 1em solid white;
+        //   position: absolute;
+        //   top: 0;
+        //   left: -0.5em;
+        // }
+        .name {
+          display: block;
+        }
+      }
+
+      .my_msg {
+        align-self: flex-end;
+        background-color: $accent1;
+        color: white;
+
+        .name {
+          color: white;
+          display: none;
+        }
+        .time {
+          color: white;
+        }
+      }
+      .my_msg.last {
+        border-top-left-radius: 0.5em;
+        border-top-right-radius: 0;
+        // &::after {
+        //   content: "";
+        //   width: 0;
+        //   height: 0;
+        //   border-left: 1em solid transparent;
+        //   border-right: 1em solid transparent;
+        //   border-top: 1em solid $accent1;
+        //   position: absolute;
+        //   top: 0;
+        //   left: auto;
+        //   right: -0.5em;
+        // }
+      }
+    }
+    .chat_input {
+      background-color: white;
+      margin: 1em auto 2em;
+      width: calc(100% - 2em);
+      padding: 1em;
+      border-radius: 1em;
+
+      textarea {
+        background-color: #f4f2ee;
+        border: none;
+        padding: 1em;
+        border-radius: 0.5em;
+        font-size: clamp(16px, 1em, 1em);
+      }
+
+      .chat_toolbar {
+        align-items: center;
+        margin-top: 1em;
+        .shortcut_btns {
+          margin-right: auto;
+          gap: 0.5em;
+          .shortcut {
+            font-size: 1em;
+            font-weight: bold;
+            padding: 0.5em 1em;
+            cursor: pointer;
+
+            &:hover {
+              background-color: $accent1;
+              color: white;
+            }
+          }
+        }
+        .send_btn {
+          font-size: 1.1em;
+          padding: 0.5em;
+          min-width: 7em;
+          text-align: center;
+
+          &:disabled {
+            opacity: 0.5;
+          }
+        }
+      }
     }
   }
 }

@@ -26,9 +26,12 @@ function Menu() {
         return (
           <Link
             key={index}
-            className={`menu_item row ${
-              pathname == route.route ? "active" : ""
-            }`}
+            className={`menu_item row 
+              ${
+                //pathname.includes(route.route) ? "active" : ""
+                ""
+              }
+              `}
             href={route.route}
           >
             <span className="material-symbols-outlined">{route.icon}</span>
