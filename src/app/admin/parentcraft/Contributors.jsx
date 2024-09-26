@@ -5,6 +5,8 @@ import {
   updateSpeaker,
   deleteSpeaker,
   getSponsors,
+  updateSponsor,
+  deleteSponsor,
 } from "./serverAction";
 import ReactPaginate from "react-paginate";
 import { not_found_img } from "@/lib/constant";
@@ -322,6 +324,13 @@ function SponsorsList({ setLoading, setError, setSponsorTarget }) {
     }
   };
 
+  function AddSponsor() {
+    setSponsorTarget({
+      name: "",
+      img_url: "",
+    });
+  }
+
   function Sponsor({ info }) {
     return (
       <div className="contr_item row" onClick={() => setSponsorTarget(info)}>
@@ -346,43 +355,61 @@ function SponsorsList({ setLoading, setError, setSponsorTarget }) {
         })}
       </div>
       <br />
-      <ReactPaginate
-        className="admin_paginate"
-        forcePage={query.page - 1}
-        breakLabel="..."
-        nextLabel="Next"
-        onPageChange={(e) => {
-          setQuery((prev) => ({ ...prev, page: e.selected + 1 }));
-        }}
-        pageRangeDisplayed={10}
-        pageCount={Math.ceil(data?.totalPage) || 1}
-        marginPagesDisplayed={0}
-        previousLabel="Prev"
-        renderOnZeroPageCount={null}
-      />
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <div className="btn1" onClick={AddSponsor}>
+          Add Sponsor
+        </div>
+        <ReactPaginate
+          className="admin_paginate"
+          forcePage={query.page - 1}
+          breakLabel="..."
+          nextLabel="Next"
+          onPageChange={(e) => {
+            setQuery((prev) => ({ ...prev, page: e.selected + 1 }));
+          }}
+          pageRangeDisplayed={10}
+          pageCount={Math.ceil(data?.totalPage) || 1}
+          marginPagesDisplayed={0}
+          previousLabel="Prev"
+          renderOnZeroPageCount={null}
+        />
+      </div>
     </>
   );
 }
 
 function SponsorForm({ target, setTarget, setLoading, setError }) {
+  const { setRefreshData } = useParentcraftContext();
   const formRef = useRef(null);
-  const handleDelete = () => {};
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteSponsor(target);
+      setTarget(null);
+      setRefreshData(true);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUpdate = async () => {
-    // try {
-    //   setLoading(true);
-    //   let form = formRef.current;
-    //   if (form.checkValidity()) {
-    //     await updateSpeaker(target);
-    //     setTarget(null);
-    //   } else {
-    //     form.reportValidity(); // This triggers the browser to display validation messages
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      setLoading(true);
+      let form = formRef.current;
+      if (form.checkValidity()) {
+        await updateSponsor(target);
+        setRefreshData(true);
+        setTarget(null);
+      } else {
+        form.reportValidity(); // This triggers the browser to display validation messages
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -431,6 +458,39 @@ function SponsorForm({ target, setTarget, setLoading, setError }) {
           {target._id ? "UPDATE" : "ADD"}
         </div>
       </div>
+      <form ref={formRef} className="admin_form">
+        <div className="input col">
+          <span className="label">SPONSOR NAME</span>
+          <input
+            type="text"
+            value={target.name}
+            onChange={(e) => {
+              setTarget((prev) => ({ ...prev, name: e.target.value }));
+            }}
+            required
+          />
+        </div>
+        <div className="input col">
+          <span className="label">SPONSOR IMG URL</span>
+          <input
+            type="text"
+            value={target.img_url}
+            onChange={(e) => {
+              setTarget((prev) => ({ ...prev, img_url: e.target.value }));
+            }}
+            required
+          />
+          <img
+            className="preview"
+            src={target.img_url}
+            onError={(e) => {
+              e.target.onerror = null; // Prevent infinite loop in case fallback image also fails
+              e.target.src = not_found_img;
+            }}
+            alt=""
+          />
+        </div>
+      </form>
     </>
   );
 }

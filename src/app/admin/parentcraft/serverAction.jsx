@@ -283,3 +283,36 @@ export async function getSponsors(query) {
 
   return return_data;
 }
+
+export async function updateSponsor(input) {
+  const db = await getDatabase();
+  let id = input._id;
+  let filter;
+  if (id && id.length === 24) {
+    filter = { _id: ObjectId.createFromHexString(id) };
+  } else {
+    filter = { _id: new ObjectId() };
+  }
+  const collection = await db.collection("parentcraft-sponsors");
+  let data = await collection.updateOne(
+    filter,
+    {
+      $set: {
+        name: input.name,
+        img_url: input.img_url,
+      },
+    },
+    {
+      upsert: true,
+    }
+  );
+}
+
+export async function deleteSponsor(input) {
+  const db = await getDatabase();
+  const collection = await db.collection("parentcraft-sponsors");
+  let data = await collection.deleteOne({
+    _id: ObjectId.createFromHexString(input._id),
+  });
+  if (data.modifiedCount == 0) throw "Delete failed";
+}

@@ -36,9 +36,16 @@ async function Contributors() {
           as: "agenda.speakers", // The name of the new array field to store the speaker info
         },
       },
+      {
+        $lookup: {
+          from: "parentcraft-sponsors", // The collection to join with (speakers)
+          localField: "agenda.sponsors", // The field in parentcraft-agenda (array of speaker ObjectIds)
+          foreignField: "_id", // The field in speakers collection (the _id field)
+          as: "agenda.sponsors", // The name of the new array field to store the speaker info
+        },
+      },
     ])
     .toArray();
-
   return (
     <>
       <div className="section_title">SPEAKERS TODAY</div>
@@ -55,7 +62,14 @@ async function Contributors() {
         ))}
       </div>
       <br />
-      <div className="section_title">OUR SPONSORS</div>
+      <div className="section_title">SPONSORS TODAY</div>
+      <div className="sponsors_list">
+        {data[0].agenda.sponsors.map((sponsor, index) => (
+          <div key={index} className="sponsor row">
+            <img src={sponsor.img_url || not_found_img} alt="" />
+          </div>
+        ))}
+      </div>
     </>
   );
 }

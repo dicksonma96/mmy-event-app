@@ -229,6 +229,22 @@ $max-width: 600px;
       }
     }
   }
+  .sponsors_list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+
+    .sponsor {
+      width: 10em;
+      background-color: rgb(250, 250, 250);
+      border-radius: 99em;
+      img {
+        width: 100%;
+        object-fit: contain;
+      }
+    }
+  }
 
   .carousel {
     width: 100%;
