@@ -449,7 +449,6 @@ function AgendaDetail({ detail, index, isLast, sortAgenda, setTarget }) {
             <span className="label">Description</span>
             <textarea
               value={detail.description}
-              required
               onChange={(e) => {
                 updateField("description", e.target.value);
               }}

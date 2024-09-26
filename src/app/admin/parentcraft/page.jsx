@@ -9,7 +9,7 @@ function Parentcraft() {
       <div className="admin_header row">
         <div className="title">PARENTCRAFT</div>
 
-        <Link className="view_btn btn1" href={"/parentcraft"}>
+        <Link className="view_btn btn1" href={"/parentcraft"} target="_blank">
           View Site
         </Link>
       </div>

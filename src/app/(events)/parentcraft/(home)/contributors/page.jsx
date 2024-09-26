@@ -2,8 +2,10 @@ import React from "react";
 import convertTo12Hour from "@/lib/convertTo12Hour";
 import getDatabase from "@/lib/mongo/mongoConnection";
 import { not_found_img } from "@/lib/constant";
+import { unstable_noStore as noStore } from "next/cache";
 
 async function Contributors() {
+  noStore();
   const db = await getDatabase();
   const collection = db.collection("event_config");
 
