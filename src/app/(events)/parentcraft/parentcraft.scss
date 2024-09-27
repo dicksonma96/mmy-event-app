@@ -94,7 +94,7 @@ $max-width: 600px;
       top: 22%;
       h3 {
         color: $accent1;
-        font-size: 1.5em;
+        font-size: 1em;
       }
       h2 {
         color: $accent2;
@@ -356,6 +356,7 @@ $max-width: 600px;
       align-items: flex-start;
       overflow: auto;
       flex-direction: column-reverse;
+      overflow-x: hidden;
 
       .announcement {
         align-self: center;
@@ -373,6 +374,11 @@ $max-width: 600px;
         border-radius: 0.5em;
         max-width: 25em;
         position: relative;
+
+        .emoji {
+          width: 15em;
+          margin-bottom: 0;
+        }
 
         .name {
           color: $accent1;
@@ -409,6 +415,9 @@ $max-width: 600px;
           display: block;
         }
       }
+      .emoji {
+        margin-left: -2em;
+      }
 
       .my_msg {
         align-self: flex-end;
@@ -438,6 +447,16 @@ $max-width: 600px;
         //   left: auto;
         //   right: -0.5em;
         // }
+      }
+      .emoji_msg.my_msg {
+        .emoji {
+          margin-right: -2em;
+          margin-left: 0;
+        }
+        background: none;
+        .time {
+          color: grey;
+        }
       }
     }
     .chat_input {

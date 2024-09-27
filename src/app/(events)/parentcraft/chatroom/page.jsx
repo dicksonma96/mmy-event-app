@@ -9,6 +9,7 @@ import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";
 import "./chat.css";
 import epochToDateTime from "@/lib/epochToDateTime";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 function Chat() {
   const [mounted, setMounted] = useState(false);
@@ -69,14 +70,6 @@ function Chat() {
       setNameModal(false);
     }
   };
-
-  useEffect(() => {
-    if (name) {
-      SendMessage({
-        announcement: `${name} joined the chatroom`,
-      });
-    }
-  }, [name]);
 
   return (
     <>
@@ -176,11 +169,22 @@ function ChatLog({ chatLog }) {
         if (chatLog[index + 1]?.clientId != info.clientId) {
           msg_status = "last";
         }
-
-        if (info.data.hasOwnProperty("announcement")) {
+        if (info.data.hasOwnProperty("emote")) {
           return (
-            <div key={index} className="announcement">
-              {info.data.announcement}
+            <div
+              key={index}
+              className={`${
+                info.clientId == uid ? "my_msg" : ""
+              } ${msg_status} chatbox emoji_msg col`}
+            >
+              <div className="name">{info.data.username || "Anonymous"}</div>
+              <DotLottieReact
+                className="emoji"
+                src={`/lottie/${info.data.emote}.lottie`}
+                autoplay
+                loop
+              />
+              <div className="time">{epochToDateTime(info.timestamp).time}</div>
             </div>
           );
         }
@@ -220,7 +224,7 @@ function ChatInput({ SendMessage }) {
   const handleEmote = async (emote) => {
     try {
       await SendMessage({
-        message: emote,
+        emote: emote,
       });
     } catch (e) {
       console.log(e);
@@ -244,10 +248,10 @@ function ChatInput({ SendMessage }) {
       />
       <div className="chat_toolbar row">
         <div className="shortcut_btns row">
-          <div className="shortcut s_btn" onClick={() => handleEmote("👏")}>
+          <div className="shortcut s_btn" onClick={() => handleEmote("clap")}>
             👏Applause!
           </div>
-          <div className="shortcut s_btn" onClick={() => handleEmote("❤️")}>
+          <div className="shortcut s_btn" onClick={() => handleEmote("love")}>
             ❤️ Love It!
           </div>
         </div>

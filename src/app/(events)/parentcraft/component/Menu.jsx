@@ -15,10 +15,10 @@ function Menu() {
       icon: "forum",
       route: basePath + "/chatroom",
     },
-    {
-      icon: "live_tv",
-      route: basePath + "/live-stream",
-    },
+    // {
+    //   icon: "live_tv",
+    //   route: basePath + "/live-stream",
+    // },
   ];
   return (
     <div className="menu row">
