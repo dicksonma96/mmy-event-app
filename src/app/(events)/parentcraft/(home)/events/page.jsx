@@ -1,91 +1,23 @@
 import React from "react";
 import Carousel from "../../component/Slider";
+import { unstable_noStore as noStore } from "next/cache";
+import { not_found_img } from "@/lib/constant";
+import getDatabase from "@/lib/mongo/mongoConnection";
 
-function Events() {
-  const banners = [
-    {
-      title: "ONGOING EVENTS",
-      layout: 1,
-      showTitle: false,
-      banners: [
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-      ],
-    },
-    {
-      title: "ONGOING EVENTS",
-      layout: 2,
-      showTitle: true,
-      banners: [
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-      ],
-    },
-    {
-      title: "YOU MAY ALSO INTERESTED",
-      layout: 2,
-      showTitle: true,
-      banners: [
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-        {
-          name: "banner",
-          img: "https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg",
-          link: "https://www.google.com/",
-        },
-      ],
-    },
-  ];
+async function Events() {
+  noStore();
+  const db = await getDatabase();
+  const collection = db.collection("parentcraft-sliders");
+
+  const banners = await collection.find({}).toArray();
 
   return (
     <>
-      {banners.map((info, index) => (
-        <Carousel key={index} info={info} />
-      ))}
+      {banners
+        .sort((a, b) => a.order - b.order)
+        .map((info, index) => (
+          <Carousel key={index} info={info} />
+        ))}
     </>
   );
 }

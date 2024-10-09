@@ -97,7 +97,6 @@ function SpeakersList({ setLoading, setError, setSpeakerTarget }) {
       setLoading(true);
       let res = await getSpeakers(query);
       setData(res);
-      console.log(res);
     } catch (e) {
       setError(e);
     } finally {
@@ -140,7 +139,7 @@ function SpeakersList({ setLoading, setError, setSpeakerTarget }) {
       <br />
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div className="btn1" onClick={AddSpeaker}>
-          Add Speaker
+          ADD SPEAKER
         </div>
         <ReactPaginate
           className="admin_paginate"
@@ -316,7 +315,6 @@ function SponsorsList({ setLoading, setError, setSponsorTarget }) {
       setLoading(true);
       let res = await getSponsors(query);
       setData(res);
-      console.log(res);
     } catch (e) {
       setError(e);
     } finally {

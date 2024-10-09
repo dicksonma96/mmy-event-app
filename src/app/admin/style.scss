@@ -67,12 +67,6 @@ $accent1: #2c82fb;
       font-weight: bold;
       color: $color1;
     }
-    .view_btn {
-      margin-left: auto;
-    }
-  }
-
-  .top_nav {
   }
 
   .modules {
@@ -83,7 +77,10 @@ $accent1: #2c82fb;
   .parentcraft_modules {
     grid-template-areas:
       "agenda contributors"
-      "agenda events_banner";
+      "agenda contributors"
+      "agenda events_banner"
+      "speaker_slide events_banner"
+      "speaker_slide events_banner";
     gap: 1em;
   }
 }
@@ -112,6 +109,7 @@ $accent1: #2c82fb;
     border-bottom: solid 0.1em #dbdce2;
     padding: 1em 0;
     align-items: center;
+    margin-bottom: 1.5em;
 
     .back_btn {
       font-size: 2em;
@@ -125,7 +123,7 @@ $accent1: #2c82fb;
     align-self: start;
     border: solid 0.1em $accent1;
     border-radius: 0.2em;
-    margin: 1em 0;
+    margin-bottom: 1em;
     .subnav_item {
       padding: 0.5em;
       color: $accent1;
@@ -264,6 +262,39 @@ $accent1: #2c82fb;
   }
 }
 
+.speaker_slide {
+  grid-area: speaker_slide;
+  .speaker_slide_item {
+    padding: 3em 1em 1em 1em;
+    border: #eef1fb solid 1px;
+    position: relative;
+    margin: 1em 0;
+    background: #f4f5f8;
+    .number {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-color: #eef1fb;
+      padding: 0.5em;
+      background-color: $accent1;
+      color: white;
+      font-size: 0.8em;
+      border-bottom-right-radius: 1em;
+    }
+    .remove {
+      position: absolute;
+      right: 1em;
+      top: 0.5em;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: grey;
+      &:hover {
+        color: black;
+      }
+    }
+  }
+}
+
 .admin_paginate {
   display: flex;
   align-items: center;
@@ -300,8 +331,35 @@ $accent1: #2c82fb;
   }
 }
 
+.events_module {
+  grid-area: events_banner;
+
+  .slider_listing {
+    margin-top: 1em;
+
+    .btn1 {
+      align-self: flex-start;
+    }
+
+    .slider_item {
+      align-items: center;
+      padding: 1em;
+      border-bottom: #eef1fb solid 1px;
+      align-items: center;
+      cursor: pointer;
+      strong {
+        margin-left: 1em;
+        font-size: 1.2em;
+        flex: 1;
+      }
+      .sort_btn span {
+        font-size: 1em;
+      }
+    }
+  }
+}
+
 .admin_form {
-  padding: 1em 0;
   .inputs_row {
     gap: 2em;
     margin-bottom: 1em;
@@ -420,6 +478,29 @@ $accent1: #2c82fb;
     }
   }
 
+  .checkbox {
+    align-items: center;
+    gap: 0.5em;
+    span {
+      white-space: nowrap;
+      font-weight: 300;
+      text-transform: uppercase;
+      font-size: 0.8em;
+    }
+    input {
+      accent-color: $accent1;
+    }
+  }
+
+  .layout_type {
+    margin-top: 2em;
+    gap: 2em;
+    .layout_item {
+      gap: 1em;
+      align-items: flex-start;
+    }
+  }
+
   .sort_listing {
     padding-top: 1em;
     // border-top: solid 1px #dbdce2;
@@ -434,7 +515,6 @@ $accent1: #2c82fb;
     }
 
     .listing {
-      margin-top: 2em;
       .agenda_item {
         padding: 1em 0;
         border-bottom: solid 1px #dbdce2;
@@ -442,21 +522,6 @@ $accent1: #2c82fb;
         align-items: center;
         &:last-child {
           border: none;
-        }
-
-        .sort_btn {
-          gap: 1em;
-          justify-content: center;
-          span {
-            padding: 0.3em;
-            border: 1px solid #eef1fb;
-            border-radius: 99em;
-            cursor: pointer;
-
-            &:hover {
-              background-color: #eef1fb;
-            }
-          }
         }
 
         .info {
@@ -476,7 +541,40 @@ $accent1: #2c82fb;
           }
         }
       }
+
+      .banner_item {
+        padding: 1em 0;
+        border-bottom: solid 1px #dbdce2;
+        margin-top: 0.5em;
+        align-items: center;
+        &:last-child {
+          border: none;
+        }
+        .banner_info {
+          flex: 1;
+          margin: 0 2em;
+        }
+      }
     }
+  }
+}
+
+.sort_btn {
+  gap: 1em;
+  justify-content: center;
+  span {
+    padding: 0.3em;
+    border: 1px solid #eef1fb;
+    border-radius: 99em;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eef1fb;
+    }
+  }
+  .disabled {
+    opacity: 0.3;
+    pointer-events: none;
   }
 }
 

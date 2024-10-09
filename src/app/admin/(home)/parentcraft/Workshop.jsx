@@ -18,7 +18,7 @@ import { Flipper, Flipped } from "react-flip-toolkit";
 import { uid } from "uid";
 import { useParentcraftContext } from "./Context";
 
-function Agenda() {
+function Workshop() {
   const [target, setTarget] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ function Agenda() {
   return (
     <div className="agenda_module module">
       {target == null ? (
-        <AgendaListing
+        <WorkshopListing
           setLoading={setLoading}
           setError={setError}
           setTarget={setTarget}
@@ -60,7 +60,7 @@ function Agenda() {
   );
 }
 
-function AgendaListing({ setLoading, setError, setTarget, handleSetActive }) {
+function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
   const { refreshData, setRefreshData } = useParentcraftContext();
   const [data, setData] = useState([]);
   const [query, setQuery] = useState({
@@ -418,15 +418,15 @@ function AgendaDetail({ detail, index, isLast, sortAgenda, setTarget }) {
     <div className="agenda_item sortable_item row">
       <div className="sort_btn col">
         <span
-          style={{ opacity: index == 0 ? 0 : 1 }}
-          className="material-symbols-outlined"
+          className={`material-symbols-outlined ${
+            index == 0 ? "disabled" : ""
+          }`}
           onClick={() => sortAgenda(-1, index)}
         >
           keyboard_arrow_up
         </span>
         <span
-          style={{ opacity: isLast ? 0 : 1 }}
-          className="material-symbols-outlined"
+          className={`material-symbols-outlined ${isLast ? "disabled" : ""}`}
           onClick={() => sortAgenda(1, index)}
         >
           keyboard_arrow_down
@@ -652,7 +652,7 @@ function SponsorsPicker({ selected, setTarget }) {
   );
 }
 
-export default Agenda;
+export default Workshop;
 
 //25.52
 //135.7  - 27.14

@@ -31,4 +31,11 @@ export const options = {
       },
     }),
   ],
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Checks if URL is an internal URL or external URL
+      if (url.startsWith("/")) return `${baseUrl}${url}`; // Redirect to internal pages
+      return baseUrl; // Default to base URL if nothing specified
+    },
+  },
 };

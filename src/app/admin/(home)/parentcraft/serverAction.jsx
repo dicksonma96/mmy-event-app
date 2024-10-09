@@ -1,6 +1,7 @@
 "use server";
 import getDatabase from "@/lib/mongo/mongoConnection";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 //--------------Workshops---------------------------
 
@@ -315,4 +316,116 @@ export async function deleteSponsor(input) {
     _id: ObjectId.createFromHexString(input._id),
   });
   if (data.modifiedCount == 0) throw "Delete failed";
+}
+
+//----Events Slider-----
+
+export async function getSlider() {
+  const db = await getDatabase();
+  const collection = db.collection("parentcraft-sliders");
+
+  const filter = {};
+
+  const data = await collection
+    .find(filter)
+    .sort({
+      order: 1,
+    })
+    .toArray();
+  let return_data = JSON.parse(JSON.stringify(data));
+
+  return return_data;
+}
+
+export async function updateSliderPosition(sortedData) {
+  const db = await getDatabase();
+  const collection = db.collection("parentcraft-sliders");
+
+  const bulkOperations = sortedData.map((item) => ({
+    updateOne: {
+      filter: { _id: ObjectId.createFromHexString(item._id) }, // Match by _id
+      update: { $set: { order: item.order } }, // Update the order field
+    },
+  }));
+
+  let res = await collection.bulkWrite(bulkOperations);
+  console.log(res);
+  revalidatePath("/admin/parentcraft");
+}
+
+export async function updateSlider(input) {
+  const db = await getDatabase();
+  let id = input._id;
+  let filter;
+  if (id && id.length === 24) {
+    filter = { _id: ObjectId.createFromHexString(id) };
+  } else {
+    filter = { _id: new ObjectId() };
+  }
+  const collection = await db.collection("parentcraft-sliders");
+  let data = await collection.updateOne(
+    filter,
+    {
+      $set: {
+        title: input.title,
+        order: input.order,
+        layout: input.layout,
+        showTitle: input.showTitle,
+        banners: input.banners,
+      },
+    },
+    {
+      upsert: true,
+    }
+  );
+}
+
+export async function deleteSlider(input) {
+  const db = await getDatabase();
+  const collection = await db.collection("parentcraft-sliders");
+  let data = await collection.deleteOne({
+    _id: ObjectId.createFromHexString(input._id),
+  });
+  if (data.modifiedCount == 0) throw "Delete failed";
+}
+
+//-----Speaker Slides-------
+
+export async function getSpeakerSlides() {
+  const db = await getDatabase();
+  const collection = db.collection("event_config");
+  let data = await collection
+    .aggregate([
+      {
+        $match: {
+          event: { $eq: "parentcraft" },
+        },
+      },
+      {
+        $project: {
+          speaker_slides: 1,
+        },
+      },
+    ])
+    .toArray();
+  data = data[0].speaker_slides;
+  let return_data = JSON.parse(JSON.stringify(data));
+
+  return return_data;
+}
+
+export async function updateSpeakerSlides(input) {
+  const db = await getDatabase();
+  const collection = db.collection("event_config");
+  const data = await collection.updateOne(
+    {
+      event: "parentcraft",
+    },
+    {
+      $set: {
+        speaker_slides: input,
+      },
+    }
+  );
+  console.log(data);
 }

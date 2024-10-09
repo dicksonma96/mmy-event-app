@@ -1,5 +1,5 @@
 import MainNav from "./MainNav";
-import "./style.scss";
+import "../style.scss";
 
 function AdminLayout({ children }) {
   return (
