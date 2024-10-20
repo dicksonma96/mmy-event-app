@@ -2,8 +2,31 @@
 import getDatabase from "@/lib/mongo/mongoConnection";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
-
+import * as Ably from "ably";
+import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 //--------------Workshops---------------------------
+
+async function clearChannelHistory() {
+  const channelName = PARENTCRAFT_ABLY_CHAT_CHANNEL;
+  const ably = new Ably.Rest(process.env.ABLY_API);
+  const channel = ably.channels.get(channelName);
+  try {
+    // Step 1: Retrieve message history
+    const history = await channel.history({ limit: 20 });
+    if (history.items.length > 0) {
+      console.log(history.items);
+      // Step 2: Overwrite messages with a placeholder (this won't truly delete them)
+      await channel.publish("history-cleared", {
+        message: "Previous messages have been cleared.",
+        timestamp: new Date(),
+      });
+    } else {
+      console.log("No message history found to clear.");
+    }
+  } catch (error) {
+    console.error("Error clearing history:", error);
+  }
+}
 
 export async function getConfig() {
   const db = await getDatabase();
@@ -57,7 +80,7 @@ export async function setActive(input) {
       },
     }
   );
-  console.log(data);
+  await clearChannelHistory();
 }
 
 export async function getAgenda(query) {

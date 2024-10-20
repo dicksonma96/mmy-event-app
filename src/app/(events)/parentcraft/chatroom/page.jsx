@@ -10,6 +10,7 @@ import daysToSeconds from "@/lib/daysToSeconds";
 import "./chat.css";
 import epochToDateTime from "@/lib/epochToDateTime";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { SaveMessage } from "./serverAction";
 
 function Chat() {
   const [mounted, setMounted] = useState(false);
@@ -21,15 +22,27 @@ function Chat() {
   const { channel, publish, connectionError, channelError } = useChannel(
     PARENTCRAFT_ABLY_CHAT_CHANNEL,
     (message) => {
-      setChatLog((prev) => [message, ...prev]);
+      console.log(message);
+      if (message.name == "history-cleared") setChatLog([]);
+      else setChatLog((prev) => [message, ...prev]);
     }
   );
   const { updateStatus } = usePresence(PARENTCRAFT_ABLY_CHAT_CHANNEL, "online");
   const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
 
   const fetchHistoryMsg = async () => {
-    let res = await channel.history({ limit: 10 });
-    setChatLog(res.items);
+    let res = await channel.history({ limit: 20 });
+    let _chatlog = [];
+    if (res.items.length) {
+      res.items.every((item) => {
+        if (item.name == "history-cleared") {
+          return false;
+        }
+        _chatlog.push(item);
+        return true;
+      });
+    }
+    setChatLog(_chatlog);
   };
 
   const showNameModal = () => {
@@ -87,7 +100,7 @@ function Chat() {
           name ? (
             <div className="chat_body col">
               <ChatLog chatLog={chatLog} />
-              <ChatInput SendMessage={SendMessage} />
+              <ChatInput SendMessage={SendMessage} name={name} />
             </div>
           ) : (
             <div className="start_chat col">
@@ -205,19 +218,84 @@ function ChatLog({ chatLog }) {
   );
 }
 
-function ChatInput({ SendMessage }) {
+function ChatInput({ SendMessage, name }) {
   const [msg, setMsg] = useState("");
   const inputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [msgCoolDown, setMsgCoolDown] = useState(0);
+  const [emojiCoolDown, setEmojiCoolDown] = useState(0);
+  const msgIntervalRef = useRef(null);
+  const emojiIntervalRef = useRef(null);
+
+  useEffect(() => {
+    // Only start interval if there's a cooldown greater than 0
+    if (msgCoolDown > 0 && !msgIntervalRef.current) {
+      msgIntervalRef.current = setInterval(() => {
+        setMsgCoolDown((prev) => {
+          if (prev <= 1) {
+            clearInterval(msgIntervalRef.current);
+            msgIntervalRef.current = null;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      // Clear the interval when component unmounts or before re-starting
+      if (msgIntervalRef.current) {
+        clearInterval(msgIntervalRef.current);
+        msgIntervalRef.current = null;
+      }
+    };
+  }, [msgCoolDown]);
+
+  useEffect(() => {
+    // Only start interval if there's a cooldown greater than 0
+    if (emojiCoolDown > 0 && !emojiIntervalRef.current) {
+      emojiIntervalRef.current = setInterval(() => {
+        setEmojiCoolDown((prev) => {
+          if (prev <= 1) {
+            clearInterval(emojiIntervalRef.current);
+            emojiIntervalRef.current = null;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      // Clear the interval when component unmounts or before re-starting
+      if (emojiIntervalRef.current) {
+        clearInterval(emojiIntervalRef.current);
+        emojiIntervalRef.current = null;
+      }
+    };
+  }, [emojiCoolDown]);
 
   const handleSend = async () => {
     inputRef.current.blur();
     try {
+      setLoading(true);
+      let res = await SaveMessage({
+        name: name || "Anonymous",
+        message: msg,
+        timestamp: new Date(),
+      });
+      if (res.success == false) {
+        throw res.message;
+      }
       await SendMessage({
         message: msg,
       });
       setMsg("");
+      setMsgCoolDown(10);
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -226,6 +304,7 @@ function ChatInput({ SendMessage }) {
       await SendMessage({
         emote: emote,
       });
+      setEmojiCoolDown(10);
     } catch (e) {
       console.log(e);
     }
@@ -248,15 +327,34 @@ function ChatInput({ SendMessage }) {
       />
       <div className="chat_toolbar row">
         <div className="shortcut_btns row">
-          <div className="shortcut s_btn" onClick={() => handleEmote("clap")}>
-            👏Applause!
-          </div>
-          <div className="shortcut s_btn" onClick={() => handleEmote("love")}>
-            ❤️ Love It!
-          </div>
+          <button
+            className="shortcut s_btn"
+            onClick={() => handleEmote("clap")}
+            disabled={emojiCoolDown > 0}
+          >
+            👏Applause! {emojiCoolDown > 0 && `(${emojiCoolDown})`}
+          </button>
+          <button
+            className="shortcut s_btn"
+            onClick={() => handleEmote("love")}
+            disabled={emojiCoolDown > 0}
+          >
+            ❤️ Love It! {emojiCoolDown > 0 && `(${emojiCoolDown})`}
+          </button>
         </div>
-        <button className="send_btn btn1" disabled={!msg} onClick={handleSend}>
-          Send ➤
+        <button
+          className="send_btn btn1"
+          disabled={!msg || loading}
+          onClick={handleSend}
+        >
+          {loading ? (
+            <div
+              className="loader"
+              style={{ fontSize: "0.4em", margin: "0 auto" }}
+            ></div>
+          ) : (
+            <>Send ➤{msgCoolDown > 0 && `(${msgCoolDown})`}</>
+          )}
         </button>
       </div>
     </div>

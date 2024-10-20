@@ -27,7 +27,6 @@ function Workshop() {
     try {
       setLoading(true);
       await setActive(info);
-      await GetData();
     } catch (e) {
       console.log(e);
     } finally {
@@ -86,6 +85,11 @@ function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
     }
   };
 
+  const ConfirmSetActive = async (info) => {
+    await handleSetActive(info);
+    await GetData();
+  };
+
   useEffect(() => {
     GetData();
   }, []);
@@ -138,7 +142,8 @@ function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
             className="live_btn"
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm(`Set ${info.name} to active?`)) handleSetActive(info);
+              if (confirm(`Set ${info.name} to active?`))
+                ConfirmSetActive(info);
             }}
           >
             INACTIVE
@@ -653,11 +658,3 @@ function SponsorsPicker({ selected, setTarget }) {
 }
 
 export default Workshop;
-
-//25.52
-//135.7  - 27.14
-//34.8  - 17.4
-//18.56
-//30.16 - 10.05
-
-// 54.28 +

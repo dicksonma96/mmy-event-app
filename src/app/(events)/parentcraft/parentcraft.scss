@@ -53,6 +53,10 @@ $max-width: 600px;
     background: none;
     border: solid 0.1em currentColor;
     color: $accent1;
+
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 
   .menu {
