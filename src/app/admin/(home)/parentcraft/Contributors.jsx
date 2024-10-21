@@ -11,6 +11,7 @@ import {
 import ReactPaginate from "react-paginate";
 import { not_found_img } from "@/lib/constant";
 import { useParentcraftContext } from "./Context";
+import ErrorModule from "./ErrorModule";
 
 function Contributors() {
   const [tab, setTab] = useState("Speakers");
@@ -22,61 +23,75 @@ function Contributors() {
 
   return (
     <div className="contributor_module module col">
-      {speakerTarget == null && sponsorTarget == null && (
+      {error ? (
+        <ErrorModule
+          error={error}
+          retryFunc={() => {
+            setError(null);
+            setLoading(false);
+          }}
+        />
+      ) : (
         <>
-          <div className="module_header row">
-            <h2>CONTRIBUTORS</h2>
-          </div>
-          <div className="subnav row">
-            {subnav.map((item, index) => (
-              <div
-                onClick={() => setTab(item)}
-                key={index}
-                className={`subnav_item ${tab == item ? "subnav_active" : ""}`}
-              >
-                {item}
+          {speakerTarget == null && sponsorTarget == null && (
+            <>
+              <div className="module_header row">
+                <h2>CONTRIBUTORS</h2>
               </div>
-            ))}
-          </div>
-          {tab == "Speakers" && (
-            <SpeakersList
+              <div className="subnav row">
+                {subnav.map((item, index) => (
+                  <div
+                    onClick={() => setTab(item)}
+                    key={index}
+                    className={`subnav_item ${
+                      tab == item ? "subnav_active" : ""
+                    }`}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+              {tab == "Speakers" && (
+                <SpeakersList
+                  setLoading={setLoading}
+                  setError={setError}
+                  setSpeakerTarget={setSpeakerTarget}
+                />
+              )}
+              {tab == "Sponsors" && (
+                <SponsorsList
+                  setLoading={setLoading}
+                  setError={setError}
+                  setSponsorTarget={setSponsorTarget}
+                />
+              )}
+            </>
+          )}
+
+          {speakerTarget && (
+            <SpeakerForm
+              target={speakerTarget}
+              setTarget={setSpeakerTarget}
               setLoading={setLoading}
               setError={setError}
-              setSpeakerTarget={setSpeakerTarget}
             />
           )}
-          {tab == "Sponsors" && (
-            <SponsorsList
+
+          {sponsorTarget && (
+            <SponsorForm
+              target={sponsorTarget}
+              setTarget={setSponsorTarget}
               setLoading={setLoading}
               setError={setError}
-              setSponsorTarget={setSponsorTarget}
             />
+          )}
+
+          {loading && (
+            <div className="module_loading">
+              <div className="loader"></div>
+            </div>
           )}
         </>
-      )}
-
-      {speakerTarget && (
-        <SpeakerForm
-          target={speakerTarget}
-          setTarget={setSpeakerTarget}
-          setLoading={setLoading}
-          setError={setError}
-        />
-      )}
-
-      {sponsorTarget && (
-        <SponsorForm
-          target={sponsorTarget}
-          setTarget={setSponsorTarget}
-          setLoading={setLoading}
-          setError={setError}
-        />
-      )}
-
-      {loading && (
-        <div className="module_loading">
-          <div className="loader"></div>
-        </div>
       )}
     </div>
   );
@@ -90,13 +105,15 @@ function SpeakersList({ setLoading, setError, setSpeakerTarget }) {
 
   useEffect(() => {
     GetData();
-  }, []);
+  }, [query]);
 
   const GetData = async () => {
     try {
       setLoading(true);
       let res = await getSpeakers(query);
-      setData(res);
+      if (!res.success) throw res.message;
+
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {
@@ -166,11 +183,13 @@ function SpeakerForm({ target, setTarget, setLoading, setError }) {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteSpeaker(target);
+      let res = await deleteSpeaker(target);
+      if (!res.success) throw res.message;
+
       setTarget(null);
       setRefreshData(true);
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -181,14 +200,16 @@ function SpeakerForm({ target, setTarget, setLoading, setError }) {
       setLoading(true);
       let form = formRef.current;
       if (form.checkValidity()) {
-        await updateSpeaker(target);
+        let res = await updateSpeaker(target);
+        if (!res.success) throw res.message;
+
         setTarget(null);
         setRefreshData(true);
       } else {
         form.reportValidity(); // This triggers the browser to display validation messages
       }
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -308,13 +329,15 @@ function SponsorsList({ setLoading, setError, setSponsorTarget }) {
 
   useEffect(() => {
     GetData();
-  }, []);
+  }, [query]);
 
   const GetData = async () => {
     try {
       setLoading(true);
       let res = await getSponsors(query);
-      setData(res);
+      if (!res.success) throw res.message;
+
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {
@@ -382,11 +405,13 @@ function SponsorForm({ target, setTarget, setLoading, setError }) {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteSponsor(target);
+      let res = await deleteSponsor(target);
+      if (!res.success) throw res.message;
+
       setTarget(null);
       setRefreshData(true);
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -397,14 +422,16 @@ function SponsorForm({ target, setTarget, setLoading, setError }) {
       setLoading(true);
       let form = formRef.current;
       if (form.checkValidity()) {
-        await updateSponsor(target);
+        let res = await updateSponsor(target);
+        if (!res.success) throw res.message;
+
         setRefreshData(true);
         setTarget(null);
       } else {
         form.reportValidity(); // This triggers the browser to display validation messages
       }
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }

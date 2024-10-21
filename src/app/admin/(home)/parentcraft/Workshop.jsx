@@ -17,6 +17,7 @@ import ReactPaginate from "react-paginate";
 import { Flipper, Flipped } from "react-flip-toolkit";
 import { uid } from "uid";
 import { useParentcraftContext } from "./Context";
+import ErrorModule from "./ErrorModule";
 
 function Workshop() {
   const [target, setTarget] = useState(null);
@@ -26,9 +27,10 @@ function Workshop() {
   const handleSetActive = async (info) => {
     try {
       setLoading(true);
-      await setActive(info);
+      let res = await setActive(info);
+      if (!res.success) throw res.message;
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -36,24 +38,37 @@ function Workshop() {
 
   return (
     <div className="agenda_module module">
-      {target == null ? (
-        <WorkshopListing
-          setLoading={setLoading}
-          setError={setError}
-          setTarget={setTarget}
-          handleSetActive={handleSetActive}
+      {error ? (
+        <ErrorModule
+          error={error}
+          retryFunc={() => {
+            setError(null);
+            setLoading(false);
+          }}
         />
       ) : (
-        <AgendaForm
-          target={target}
-          setTarget={setTarget}
-          setLoading={setLoading}
-        />
-      )}
-      {loading && (
-        <div className="module_loading">
-          <div className="loader"></div>
-        </div>
+        <>
+          {target == null ? (
+            <WorkshopListing
+              setLoading={setLoading}
+              setError={setError}
+              setTarget={setTarget}
+              handleSetActive={handleSetActive}
+            />
+          ) : (
+            <AgendaForm
+              target={target}
+              setError={setError}
+              setTarget={setTarget}
+              setLoading={setLoading}
+            />
+          )}
+          {loading && (
+            <div className="module_loading">
+              <div className="loader"></div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -77,7 +92,9 @@ function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
     try {
       setLoading(true);
       let res = await getAgenda(query);
-      setData(res);
+      if (!res.success) throw res.message;
+
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {
@@ -92,7 +109,7 @@ function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
 
   useEffect(() => {
     GetData();
-  }, []);
+  }, [query]);
 
   const agendaTemplate = {
     _id: "",
@@ -197,7 +214,7 @@ function WorkshopListing({ setLoading, setError, setTarget, handleSetActive }) {
   );
 }
 
-function AgendaForm({ target, setTarget, setLoading }) {
+function AgendaForm({ target, setError, setTarget, setLoading }) {
   const formRef = useRef(null);
 
   const handleUpdate = async () => {
@@ -205,7 +222,9 @@ function AgendaForm({ target, setTarget, setLoading }) {
       setLoading(true);
       let form = formRef.current;
       if (form.checkValidity()) {
-        await saveAgenda(target);
+        let res = await saveAgenda(target);
+        if (!res.success) throw res.message;
+
         setTarget(null);
       } else {
         // alert("Please fill out the required fields correctly.");
@@ -213,7 +232,7 @@ function AgendaForm({ target, setTarget, setLoading }) {
         form.reportValidity(); // This triggers the browser to display validation messages
       }
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -222,10 +241,11 @@ function AgendaForm({ target, setTarget, setLoading }) {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteAgenda(target);
+      let res = await deleteAgenda(target);
+      if (!res.success) throw res.message;
       setTarget(null);
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -505,7 +525,9 @@ function SpeakersPicker({ selected, setTarget }) {
     try {
       setPending(true);
       let res = await getSpeakersOptions();
-      setData(res);
+      if (!res.success) throw res.message;
+
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {
@@ -588,7 +610,9 @@ function SponsorsPicker({ selected, setTarget }) {
     try {
       setPending(true);
       let res = await getSponsorsOptions();
-      setData(res);
+      if (!res.success) throw res.message;
+
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {

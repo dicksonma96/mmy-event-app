@@ -11,6 +11,7 @@ import { uid } from "uid";
 import Image from "next/image";
 import Layout1 from "@/assets/img/admin/layout1.png";
 import Layout2 from "@/assets/img/admin/layout2.png";
+import ErrorModule from "./ErrorModule";
 
 function Events() {
   const [target, setTarget] = useState(null);
@@ -19,23 +20,36 @@ function Events() {
 
   return (
     <div className="events_module module">
-      {target == null ? (
-        <EventsListing
-          setLoading={setLoading}
-          setError={setError}
-          setTarget={setTarget}
+      {error ? (
+        <ErrorModule
+          error={error}
+          retryFunc={() => {
+            setError(null);
+            setLoading(false);
+          }}
         />
       ) : (
-        <EventsForm
-          target={target}
-          setTarget={setTarget}
-          setLoading={setLoading}
-        />
-      )}
-      {loading && (
-        <div className="module_loading">
-          <div className="loader"></div>
-        </div>
+        <>
+          {target == null ? (
+            <EventsListing
+              setLoading={setLoading}
+              setError={setError}
+              setTarget={setTarget}
+            />
+          ) : (
+            <EventsForm
+              target={target}
+              setError={setError}
+              setTarget={setTarget}
+              setLoading={setLoading}
+            />
+          )}
+          {loading && (
+            <div className="module_loading">
+              <div className="loader"></div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -49,7 +63,8 @@ function EventsListing({ setTarget, setLoading, setError }) {
     try {
       setLoading(true);
       let res = await getSlider();
-      setData(res);
+      if (!res.success) throw res.message;
+      setData(res.data);
     } catch (e) {
       setError(e);
     } finally {
@@ -95,12 +110,13 @@ function EventsListing({ setTarget, setLoading, setError }) {
   const UpdateSlider = async () => {
     try {
       setLoading(true);
-      await updateSliderPosition(
+      let res = await updateSliderPosition(
         data.map((d, index) => ({
           ...d,
           order: index,
         }))
       );
+      if (!res.success) throw res.message;
       setAlterOrder(false);
     } catch (e) {
       setError(e);
@@ -179,7 +195,7 @@ function EventsListing({ setTarget, setLoading, setError }) {
   );
 }
 
-function EventsForm({ setTarget, target, setLoading }) {
+function EventsForm({ setTarget, target, setLoading, setError }) {
   const formRef = useRef(null);
   const Layout = [
     {
@@ -197,13 +213,14 @@ function EventsForm({ setTarget, target, setLoading }) {
       setLoading(true);
       let form = formRef.current;
       if (form.checkValidity()) {
-        await updateSlider(target);
+        let res = await updateSlider(target);
+        if (!res.success) throw res.message;
         setTarget(null);
       } else {
         form.reportValidity(); // This triggers the browser to display validation messages
       }
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -212,10 +229,11 @@ function EventsForm({ setTarget, target, setLoading }) {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteSlider(target);
+      let res = await deleteSlider(target);
+      if (!res.success) throw res.message;
       setTarget(null);
     } catch (e) {
-      console.log(e);
+      setError(e);
     } finally {
       setLoading(false);
     }

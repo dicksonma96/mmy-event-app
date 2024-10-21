@@ -14,7 +14,8 @@ function ParentcraftChatroom() {
 
   const { channel } = useChannel(PARENTCRAFT_ABLY_CHAT_CHANNEL, (message) => {
     console.log(message);
-    setChatLog((prev) => [message, ...prev]);
+    if (message.name == "history-cleared") setChatLog([]);
+    else setChatLog((prev) => [message, ...prev]);
   });
   const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
   const [hideChat, setHideChat] = useState(false);

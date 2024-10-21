@@ -321,6 +321,12 @@ $max-width: 600px;
         color: green;
       }
     }
+    .update_name {
+      align-self: center;
+      margin-left: auto;
+      padding: 0.5em 1em;
+      font-size: 1em;
+    }
   }
 
   .start_chat {
@@ -364,12 +370,15 @@ $max-width: 600px;
 
       .announcement {
         align-self: center;
-        padding: 0.2em 1em;
+        padding: 0.5em 2em;
         background-color: #f4f2ee;
         color: grey;
         border-radius: 1em;
         margin: 0.2em 0;
-        font-size: 0.8em;
+        font-size: 0.9em;
+        strong {
+          color: $accent1;
+        }
       }
 
       .chatbox {

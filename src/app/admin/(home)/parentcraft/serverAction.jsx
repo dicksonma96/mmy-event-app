@@ -1,7 +1,6 @@
 "use server";
 import getDatabase from "@/lib/mongo/mongoConnection";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
 import * as Ably from "ably";
 import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 //--------------Workshops---------------------------
@@ -64,391 +63,472 @@ export async function getConfig() {
 }
 
 export async function setActive(input) {
-  const db = await getDatabase();
-  let id = input._id;
-  if (id == null) {
-    throw "Id not found";
-  }
-  const collection = await db.collection("event_config");
-  let data = await collection.updateOne(
-    {
-      event: "parentcraft",
-    },
-    {
-      $set: {
-        agenda: ObjectId.createFromHexString(input._id),
-      },
+  try {
+    const db = await getDatabase();
+    let id = input._id;
+    if (id == null) {
+      throw "Id not found";
     }
-  );
-  await clearChannelHistory();
+    const collection = await db.collection("event_config");
+    let data = await collection.updateOne(
+      {
+        event: "parentcraft",
+      },
+      {
+        $set: {
+          agenda: ObjectId.createFromHexString(input._id),
+        },
+      }
+    );
+    await clearChannelHistory();
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function getAgenda(query) {
-  const entries = 5;
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-agenda");
+  try {
+    const entries = 5;
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-agenda");
 
-  const filter = {};
-  const totalDocuments = await collection.countDocuments(filter);
+    const filter = {};
+    const totalDocuments = await collection.countDocuments(filter);
 
-  const activeAgenda = await getConfig();
-  const activeAgendaId = activeAgenda?.agenda?._id || null;
-  const activeAgendaIdObject = activeAgendaId
-    ? ObjectId.createFromHexString(activeAgendaId)
-    : null;
+    const activeAgenda = await getConfig();
+    const activeAgendaId = activeAgenda?.agenda?._id || null;
+    const activeAgendaIdObject = activeAgendaId
+      ? ObjectId.createFromHexString(activeAgendaId)
+      : null;
 
-  const data = await collection
-    .aggregate([
-      // {
-      //   $match: {
-      //     _id: { $ne: ObjectId.createFromHexString(activeAgendaId) },
-      //   },
-      // },
-      {
-        $lookup: {
-          from: "parentcraft-speakers", // The collection to join with (speakers)
-          localField: "speakers", // The field in parentcraft-agenda (array of speaker ObjectIds)
-          foreignField: "_id", // The field in speakers collection (the _id field)
-          as: "speakers", // The name of the new array field to store the speaker info
+    const data = await collection
+      .aggregate([
+        // {
+        //   $match: {
+        //     _id: { $ne: ObjectId.createFromHexString(activeAgendaId) },
+        //   },
+        // },
+        {
+          $lookup: {
+            from: "parentcraft-speakers", // The collection to join with (speakers)
+            localField: "speakers", // The field in parentcraft-agenda (array of speaker ObjectIds)
+            foreignField: "_id", // The field in speakers collection (the _id field)
+            as: "speakers", // The name of the new array field to store the speaker info
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "parentcraft-sponsors", // The collection to join with (speakers)
-          localField: "sponsors", // The field in parentcraft-agenda (array of speaker ObjectIds)
-          foreignField: "_id", // The field in speakers collection (the _id field)
-          as: "sponsors", // The name of the new array field to store the speaker info
+        {
+          $lookup: {
+            from: "parentcraft-sponsors", // The collection to join with (speakers)
+            localField: "sponsors", // The field in parentcraft-agenda (array of speaker ObjectIds)
+            foreignField: "_id", // The field in speakers collection (the _id field)
+            as: "sponsors", // The name of the new array field to store the speaker info
+          },
         },
-      },
-      {
-        $addFields: {
-          isActiveAgenda: {
-            $cond: {
-              if: {
-                $and: [
-                  { $ne: [activeAgendaId, null] },
-                  {
-                    $eq: ["$_id", activeAgendaIdObject],
-                  },
-                ],
+        {
+          $addFields: {
+            isActiveAgenda: {
+              $cond: {
+                if: {
+                  $and: [
+                    { $ne: [activeAgendaId, null] },
+                    {
+                      $eq: ["$_id", activeAgendaIdObject],
+                    },
+                  ],
+                },
+                then: 1,
+                else: 0,
               },
-              then: 1,
-              else: 0,
             },
           },
         },
-      },
-      {
-        $sort: {
-          isActiveAgenda: -1, // Sort the active agenda first
-          date: -1, // Then sort the remaining documents by date
+        {
+          $sort: {
+            isActiveAgenda: -1, // Sort the active agenda first
+            date: -1, // Then sort the remaining documents by date
+          },
         },
-      },
-    ])
-    .skip(entries * (query.page - 1))
-    .limit(entries)
-    .toArray();
+      ])
+      .skip(entries * (query.page - 1))
+      .limit(entries)
+      .toArray();
 
-  let return_data = JSON.parse(
-    JSON.stringify({
-      data: data,
-      totalDocs: totalDocuments,
-      totalPage: Math.ceil(totalDocuments / entries),
-      currentPage: query.page,
-    })
-  );
-
-  return return_data;
+    let return_data = JSON.parse(
+      JSON.stringify({
+        data: data,
+        totalDocs: totalDocuments,
+        totalPage: Math.ceil(totalDocuments / entries),
+        currentPage: query.page,
+      })
+    );
+    return { data: return_data, success: true };
+  } catch (e) {
+    return { message: e.message, success: false };
+  }
 }
 
 export async function getSpeakersOptions() {
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-speakers");
-  const filter = {};
-  const data = await collection.find(filter).toArray();
-  let return_data = JSON.parse(JSON.stringify(data));
-  return return_data;
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-speakers");
+    const filter = {};
+    const data = await collection.find(filter).toArray();
+    let return_data = JSON.parse(JSON.stringify(data));
+    return { data: return_data, success: true };
+  } catch (e) {
+    return { message: e.message, success: false };
+  }
 }
 
 export async function getSponsorsOptions() {
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-sponsors");
-  const filter = {};
-  const data = await collection.find(filter).toArray();
-  let return_data = JSON.parse(JSON.stringify(data));
-  return return_data;
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-sponsors");
+    const filter = {};
+    const data = await collection.find(filter).toArray();
+    let return_data = JSON.parse(JSON.stringify(data));
+    return { data: return_data, success: true };
+  } catch (e) {
+    return { message: e.message, success: false };
+  }
 }
 
 export async function saveAgenda(input) {
-  const db = await getDatabase();
-  let id = input._id;
-  let filter;
-  if (id && id.length === 24) {
-    filter = { _id: ObjectId.createFromHexString(id) };
-  } else {
-    filter = { _id: new ObjectId() };
-  }
-  const collection = await db.collection("parentcraft-agenda");
-  let data = await collection.updateOne(
-    filter,
-    {
-      $set: {
-        name: input.name,
-        date: input.date,
-        speakers: input.speakers.map((item) =>
-          ObjectId.createFromHexString(item._id)
-        ),
-        sponsors: input.sponsors.map((item) =>
-          ObjectId.createFromHexString(item._id)
-        ),
-        agendas: input.agendas,
-      },
-    },
-    {
-      upsert: true,
+  try {
+    const db = await getDatabase();
+    let id = input._id;
+    let filter;
+    if (id && id.length === 24) {
+      filter = { _id: ObjectId.createFromHexString(id) };
+    } else {
+      filter = { _id: new ObjectId() };
     }
-  );
+    const collection = await db.collection("parentcraft-agenda");
+    let data = await collection.updateOne(
+      filter,
+      {
+        $set: {
+          name: input.name,
+          date: input.date,
+          speakers: input.speakers.map((item) =>
+            ObjectId.createFromHexString(item._id)
+          ),
+          sponsors: input.sponsors.map((item) =>
+            ObjectId.createFromHexString(item._id)
+          ),
+          agendas: input.agendas,
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+    return { success: true };
+  } catch (e) {
+    return { success: false, message: e.message };
+  }
 }
 
 export async function deleteAgenda(input) {
-  const db = await getDatabase();
-  const collection = await db.collection("parentcraft-agenda");
-  let data = await collection.deleteOne({
-    _id: ObjectId.createFromHexString(input._id),
-  });
-  if (data.modifiedCount == 0) throw "Delete failed";
+  try {
+    const db = await getDatabase();
+    const collection = await db.collection("parentcraft-agenda");
+    let data = await collection.deleteOne({
+      _id: ObjectId.createFromHexString(input._id),
+    });
+    if (data.modifiedCount == 0) throw "Delete failed";
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 //-----------Contributors, Speakers and Sponsors---------------------------------------------
 
 export async function getSpeakers(query) {
-  const entries = 5;
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-speakers");
+  try {
+    const entries = 5;
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-speakers");
 
-  const filter = {};
-  const totalDocuments = await collection.countDocuments(filter);
+    const filter = {};
+    const totalDocuments = await collection.countDocuments(filter);
 
-  const data = await collection
-    .find(filter)
-    .skip(entries * (query.page - 1))
-    .limit(entries)
-    .toArray();
+    const data = await collection
+      .find(filter)
+      .skip(entries * (query.page - 1))
+      .limit(entries)
+      .toArray();
 
-  let return_data = JSON.parse(
-    JSON.stringify({
-      data: data,
-      totalDocs: totalDocuments,
-      totalPage: Math.ceil(totalDocuments / entries),
-      currentPage: query.page,
-    })
-  );
+    let return_data = JSON.parse(
+      JSON.stringify({
+        data: data,
+        totalDocs: totalDocuments,
+        totalPage: Math.ceil(totalDocuments / entries),
+        currentPage: query.page,
+      })
+    );
 
-  return return_data;
+    return { data: return_data, success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function updateSpeaker(input) {
-  const db = await getDatabase();
-  let id = input._id;
-  let filter;
-  if (id && id.length === 24) {
-    filter = { _id: ObjectId.createFromHexString(id) };
-  } else {
-    filter = { _id: new ObjectId() };
-  }
-  const collection = await db.collection("parentcraft-speakers");
-  let data = await collection.updateOne(
-    filter,
-    {
-      $set: {
-        name: input.name,
-        specialist: input.specialist,
-        hospital: input.hospital,
-        img_url: input.img_url,
-      },
-    },
-    {
-      upsert: true,
+  try {
+    const db = await getDatabase();
+    let id = input._id;
+    let filter;
+    if (id && id.length === 24) {
+      filter = { _id: ObjectId.createFromHexString(id) };
+    } else {
+      filter = { _id: new ObjectId() };
     }
-  );
+    const collection = await db.collection("parentcraft-speakers");
+    let data = await collection.updateOne(
+      filter,
+      {
+        $set: {
+          name: input.name,
+          specialist: input.specialist,
+          hospital: input.hospital,
+          img_url: input.img_url,
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+    return { success: true };
+  } catch (e) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function deleteSpeaker(input) {
-  const db = await getDatabase();
-  const collection = await db.collection("parentcraft-speakers");
-  let data = await collection.deleteOne({
-    _id: ObjectId.createFromHexString(input._id),
-  });
-  if (data.modifiedCount == 0) throw "Delete failed";
+  try {
+    const db = await getDatabase();
+    const collection = await db.collection("parentcraft-speakers");
+    let data = await collection.deleteOne({
+      _id: ObjectId.createFromHexString(input._id),
+    });
+    if (data.modifiedCount == 0) throw "Delete failed";
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function getSponsors(query) {
-  const entries = 5;
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-sponsors");
+  try {
+    const entries = 5;
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-sponsors");
 
-  const filter = {};
-  const totalDocuments = await collection.countDocuments(filter);
+    const filter = {};
+    const totalDocuments = await collection.countDocuments(filter);
 
-  const data = await collection
-    .find(filter)
-    .skip(entries * (query.page - 1))
-    .limit(entries)
-    .toArray();
+    const data = await collection
+      .find(filter)
+      .skip(entries * (query.page - 1))
+      .limit(entries)
+      .toArray();
 
-  let return_data = JSON.parse(
-    JSON.stringify({
-      data: data,
-      totalDocs: totalDocuments,
-      totalPage: Math.ceil(totalDocuments / entries),
-      currentPage: query.page,
-    })
-  );
-
-  return return_data;
+    let return_data = JSON.parse(
+      JSON.stringify({
+        data: data,
+        totalDocs: totalDocuments,
+        totalPage: Math.ceil(totalDocuments / entries),
+        currentPage: query.page,
+      })
+    );
+    return { success: true, data: return_data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function updateSponsor(input) {
-  const db = await getDatabase();
-  let id = input._id;
-  let filter;
-  if (id && id.length === 24) {
-    filter = { _id: ObjectId.createFromHexString(id) };
-  } else {
-    filter = { _id: new ObjectId() };
-  }
-  const collection = await db.collection("parentcraft-sponsors");
-  let data = await collection.updateOne(
-    filter,
-    {
-      $set: {
-        name: input.name,
-        img_url: input.img_url,
-      },
-    },
-    {
-      upsert: true,
+  try {
+    const db = await getDatabase();
+    let id = input._id;
+    let filter;
+    if (id && id.length === 24) {
+      filter = { _id: ObjectId.createFromHexString(id) };
+    } else {
+      filter = { _id: new ObjectId() };
     }
-  );
+    const collection = await db.collection("parentcraft-sponsors");
+    let data = await collection.updateOne(
+      filter,
+      {
+        $set: {
+          name: input.name,
+          img_url: input.img_url,
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function deleteSponsor(input) {
-  const db = await getDatabase();
-  const collection = await db.collection("parentcraft-sponsors");
-  let data = await collection.deleteOne({
-    _id: ObjectId.createFromHexString(input._id),
-  });
-  if (data.modifiedCount == 0) throw "Delete failed";
+  try {
+    const db = await getDatabase();
+    const collection = await db.collection("parentcraft-sponsors");
+    let data = await collection.deleteOne({
+      _id: ObjectId.createFromHexString(input._id),
+    });
+    if (data.modifiedCount == 0) throw "Delete failed";
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 //----Events Slider-----
 
 export async function getSlider() {
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-sliders");
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-sliders");
 
-  const filter = {};
+    const filter = {};
 
-  const data = await collection
-    .find(filter)
-    .sort({
-      order: 1,
-    })
-    .toArray();
-  let return_data = JSON.parse(JSON.stringify(data));
+    const data = await collection
+      .find(filter)
+      .sort({
+        order: 1,
+      })
+      .toArray();
+    let return_data = JSON.parse(JSON.stringify(data));
 
-  return return_data;
+    return { success: true, data: return_data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function updateSliderPosition(sortedData) {
-  const db = await getDatabase();
-  const collection = db.collection("parentcraft-sliders");
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("parentcraft-sliders");
 
-  const bulkOperations = sortedData.map((item) => ({
-    updateOne: {
-      filter: { _id: ObjectId.createFromHexString(item._id) }, // Match by _id
-      update: { $set: { order: item.order } }, // Update the order field
-    },
-  }));
+    const bulkOperations = sortedData.map((item) => ({
+      updateOne: {
+        filter: { _id: ObjectId.createFromHexString(item._id) }, // Match by _id
+        update: { $set: { order: item.order } }, // Update the order field
+      },
+    }));
 
-  let res = await collection.bulkWrite(bulkOperations);
-  console.log(res);
-  revalidatePath("/admin/parentcraft");
+    let data = await collection.bulkWrite(bulkOperations);
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function updateSlider(input) {
-  const db = await getDatabase();
-  let id = input._id;
-  let filter;
-  if (id && id.length === 24) {
-    filter = { _id: ObjectId.createFromHexString(id) };
-  } else {
-    filter = { _id: new ObjectId() };
-  }
-  const collection = await db.collection("parentcraft-sliders");
-  let data = await collection.updateOne(
-    filter,
-    {
-      $set: {
-        title: input.title,
-        order: input.order,
-        layout: input.layout,
-        showTitle: input.showTitle,
-        banners: input.banners,
-      },
-    },
-    {
-      upsert: true,
+  try {
+    const db = await getDatabase();
+    let id = input._id;
+    let filter;
+    if (id && id.length === 24) {
+      filter = { _id: ObjectId.createFromHexString(id) };
+    } else {
+      filter = { _id: new ObjectId() };
     }
-  );
+    const collection = await db.collection("parentcraft-sliders");
+    let data = await collection.updateOne(
+      filter,
+      {
+        $set: {
+          title: input.title,
+          order: input.order,
+          layout: input.layout,
+          showTitle: input.showTitle,
+          banners: input.banners,
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function deleteSlider(input) {
-  const db = await getDatabase();
-  const collection = await db.collection("parentcraft-sliders");
-  let data = await collection.deleteOne({
-    _id: ObjectId.createFromHexString(input._id),
-  });
-  if (data.modifiedCount == 0) throw "Delete failed";
+  try {
+    const db = await getDatabase();
+    const collection = await db.collection("parentcraft-sliders");
+    let data = await collection.deleteOne({
+      _id: ObjectId.createFromHexString(input._id),
+    });
+    if (data.modifiedCount == 0) throw "Delete failed";
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 //-----Speaker Slides-------
 
 export async function getSpeakerSlides() {
-  const db = await getDatabase();
-  const collection = db.collection("event_config");
-  let data = await collection
-    .aggregate([
-      {
-        $match: {
-          event: { $eq: "parentcraft" },
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("event_config");
+    let data = await collection
+      .aggregate([
+        {
+          $match: {
+            event: { $eq: "parentcraft" },
+          },
         },
-      },
-      {
-        $project: {
-          speaker_slides: 1,
+        {
+          $project: {
+            speaker_slides: 1,
+          },
         },
-      },
-    ])
-    .toArray();
-  data = data[0].speaker_slides;
-  let return_data = JSON.parse(JSON.stringify(data));
+      ])
+      .toArray();
+    data = data[0].speaker_slides;
+    let return_data = JSON.parse(JSON.stringify(data));
 
-  return return_data;
+    return { success: true, data: return_data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
 
 export async function updateSpeakerSlides(input) {
-  const db = await getDatabase();
-  const collection = db.collection("event_config");
-  const data = await collection.updateOne(
-    {
-      event: "parentcraft",
-    },
-    {
-      $set: {
-        speaker_slides: input,
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("event_config");
+    const data = await collection.updateOne(
+      {
+        event: "parentcraft",
       },
-    }
-  );
-  console.log(data);
+      {
+        $set: {
+          speaker_slides: input,
+        },
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }

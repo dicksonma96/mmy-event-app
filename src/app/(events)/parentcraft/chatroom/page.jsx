@@ -38,7 +38,7 @@ function Chat() {
         if (item.name == "history-cleared") {
           return false;
         }
-        _chatlog.push(item);
+        if (item.name == "chat-message") _chatlog.push(item);
         return true;
       });
     }
@@ -72,13 +72,19 @@ function Chat() {
   const setChatName = (e) => {
     if (e.target.checkValidity()) {
       e.preventDefault();
+      let guest_name = "Guest" + " " + getCookie("parentcraft_uid").slice(0, 5);
       if (chatAnony) {
-        setName("Guest" + " " + getCookie("parentcraft_uid").slice(0, 5));
+        setName(guest_name);
       } else {
         const formData = new FormData(e.target);
         const _name = formData.get("name");
         setName(_name);
         setCookie("parentcraft_chat_name", _name, { maxAge: daysToSeconds(1) });
+        publish("announcement", {
+          type: "ChangeName",
+          from: name || guest_name,
+          to: _name,
+        });
       }
       setNameModal(false);
     }
@@ -94,6 +100,9 @@ function Chat() {
           <div className="header_text col">
             <span>Parentcraft Chatroom</span>
             <span className="status">{presenceData?.length} online</span>
+          </div>
+          <div onClick={showNameModal} className="update_name s_btn">
+            Update Name
           </div>
         </div>
         {mounted ? (
@@ -201,6 +210,16 @@ function ChatLog({ chatLog }) {
             </div>
           );
         }
+
+        if (info.name == "announcement") {
+          return (
+            <div key={index} className="announcement">
+              <strong>{info.data.from}</strong> changed name to{" "}
+              <strong>{info.data.to}</strong>
+            </div>
+          );
+        }
+
         return (
           <div
             key={index}
@@ -280,6 +299,7 @@ function ChatInput({ SendMessage, name }) {
     try {
       setLoading(true);
       let res = await SaveMessage({
+        userId: getCookie("parentcraft_uid"),
         name: name || "Anonymous",
         message: msg,
         timestamp: new Date(),
