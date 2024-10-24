@@ -27,10 +27,11 @@ function ParentcraftChatroom() {
 
   const GetSlides = async () => {
     try {
-      let data = await getSpeakerSlides();
-      setData(data);
-      if (data.length) {
-        setActiveSlides(data[0]);
+      let res = await getSpeakerSlides();
+      if (!res.success) throw res.message;
+      setData(res.data);
+      if (res.data.length) {
+        setActiveSlides(res.data[0]);
       }
     } catch (e) {
       console.log(e);

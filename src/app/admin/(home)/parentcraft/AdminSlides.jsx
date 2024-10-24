@@ -121,12 +121,18 @@ function AdminSlides() {
                         type="text"
                         value={item.slides_url}
                         onChange={(e) => {
+                          let input = e.target.value;
+
+                          if (input.includes("docs.google.com")) {
+                            input = input.replace(/edit.*$/, "embed");
+                          }
+
                           setData((prev) =>
                             prev.map((itm, i) => {
                               if (index == i) {
                                 return {
                                   ...itm,
-                                  slides_url: e.target.value,
+                                  slides_url: input,
                                 };
                               }
                               return itm;
