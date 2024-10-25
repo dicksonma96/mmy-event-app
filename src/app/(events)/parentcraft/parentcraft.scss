@@ -13,6 +13,15 @@ $max-width: 600px;
   background-color: $accent1;
 }
 
+.page_loader {
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 15em;
+  border-radius: 1em;
+  .loader {
+    margin: auto;
+  }
+}
+
 .error {
   width: 100%;
   height: 20em;

@@ -13,6 +13,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { SaveMessage } from "./serverAction";
 
 function Chat() {
+  const [error, setError] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState(null);
   const [nameModal, setNameModal] = useState(false);
@@ -31,18 +32,22 @@ function Chat() {
   const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
 
   const fetchHistoryMsg = async () => {
-    let res = await channel.history({ limit: 20 });
-    let _chatlog = [];
-    if (res.items.length) {
-      res.items.every((item) => {
-        if (item.name == "history-cleared") {
-          return false;
-        }
-        if (item.name == "chat-message") _chatlog.push(item);
-        return true;
-      });
+    try {
+      let res = await channel.history({ limit: 20 });
+      let _chatlog = [];
+      if (res.items.length) {
+        res.items.every((item) => {
+          if (item.name == "history-cleared") {
+            return false;
+          }
+          if (item.name == "chat-message") _chatlog.push(item);
+          return true;
+        });
+      }
+      setChatLog(_chatlog);
+    } catch (e) {
+      setError(e);
     }
-    setChatLog(_chatlog);
   };
 
   const showNameModal = () => {
@@ -90,7 +95,9 @@ function Chat() {
     }
   };
 
-  return (
+  return error ? (
+    <Error error={error} />
+  ) : (
     <>
       <div className="chatroom col">
         <div className="chat_header row">
@@ -377,6 +384,27 @@ function ChatInput({ SendMessage, name }) {
           )}
         </button>
       </div>
+    </div>
+  );
+}
+
+function Error({ error }) {
+  function ShowErrorMessage() {
+    if (typeof error === "string" || error instanceof String) return error;
+
+    if (error?.message) {
+      return error.message;
+    } else return "Something went wrong. Please try again";
+  }
+  return (
+    <div
+      className="chat_error col"
+      onClick={() => {
+        location.reload();
+      }}
+    >
+      <span className={`material-symbols-outlined `}>refresh</span>
+      <span>{ShowErrorMessage()}</span>
     </div>
   );
 }

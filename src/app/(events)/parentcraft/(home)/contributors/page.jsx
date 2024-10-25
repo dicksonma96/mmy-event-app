@@ -4,6 +4,7 @@ import getDatabase from "@/lib/mongo/mongoConnection";
 import { not_found_img } from "@/lib/constant";
 import { unstable_noStore as noStore } from "next/cache";
 import Error from "../Error";
+import PageLoading from "../../component/PageLoading";
 
 async function Contributors() {
   try {
@@ -48,6 +49,7 @@ async function Contributors() {
         },
       ])
       .toArray();
+
     return (
       <>
         <div className="section_title">SPEAKERS TODAY</div>
