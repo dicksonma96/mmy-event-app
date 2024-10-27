@@ -297,7 +297,10 @@ function SpeakerForm({ target, setTarget, setLoading, setError }) {
           />
         </div>
         <div className="input col">
-          <span className="label">SPEAKER IMG URL</span>
+          <span className="label">
+            SPEAKER IMG URL{" "}
+            <em style={{ textTransform: "none" }}>(200px x 200px)</em>
+          </span>
           <input
             type="text"
             value={target.img_url}
