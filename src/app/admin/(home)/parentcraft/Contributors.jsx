@@ -452,7 +452,7 @@ function SponsorForm({ target, setTarget, setLoading, setError }) {
           chevron_left
         </span>
         <h2 style={{ marginRight: "auto" }}>
-          {target._id ? target.name : "Add Speaker"}
+          {target._id ? target.name : "Add Sponsor"}
         </h2>
 
         {target._id && (

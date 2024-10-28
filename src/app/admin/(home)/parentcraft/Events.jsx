@@ -296,7 +296,7 @@ function EventsForm({ setTarget, target, setLoading, setError }) {
           chevron_left
         </span>
         <h2 style={{ marginRight: "auto" }}>
-          {target._id ? target.title : "Add New Workshop"}
+          {target._id ? target.title : "Add New Banner"}
         </h2>
 
         {target._id && (

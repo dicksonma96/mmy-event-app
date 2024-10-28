@@ -337,7 +337,7 @@ function AgendaForm({ target, setError, setTarget, setLoading }) {
       <form className="admin_form" ref={formRef}>
         <div className="inputs_row row">
           <div className="input col">
-            <span className="label">AGENDA NAME</span>
+            <span className="label">WORKSHOP NAME</span>
             <input
               type="text"
               value={target.name}
