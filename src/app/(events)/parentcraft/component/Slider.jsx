@@ -9,7 +9,8 @@ export default function Carousel({ info }) {
   const [isSliding, setIsSliding] = useState(false);
   let settings = {
     dots: info.layout == 1 ? true : false,
-    infinite: info.layout == 1 ? true : false,
+    infinite:
+      info.banners.length > 1 ? (info.layout == 1 ? true : false) : false,
     speed: 500,
     slidesToShow: info.layout == 1 ? 1 : 1.1,
     slidesToScroll: 1,

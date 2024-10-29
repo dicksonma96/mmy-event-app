@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./style.scss";
 import { useChannel, usePresenceListener, usePresence } from "ably/react";
 import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
@@ -11,6 +11,7 @@ function ParentcraftChatroom() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [chatLog, setChatLog] = useState([]);
+  const [error, setError] = useState(false);
 
   const { channel } = useChannel(PARENTCRAFT_ABLY_CHAT_CHANNEL, (message) => {
     console.log(message);
@@ -19,10 +20,32 @@ function ParentcraftChatroom() {
   });
   const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
   const [hideChat, setHideChat] = useState(false);
+  const [hideMenu, setHideMenu] = useState(false);
   const [activeSlides, setActiveSlides] = useState("");
+  const chatroom_ref = useRef(null);
+
+  const fetchHistoryMsg = async () => {
+    try {
+      let res = await channel.history({ limit: 300 });
+      let _chatlog = [];
+      if (res.items.length) {
+        res.items.every((item) => {
+          if (item.name == "history-cleared") {
+            return false;
+          }
+          if (item.name == "chat-message") _chatlog.push(item);
+          return true;
+        });
+      }
+      setChatLog(_chatlog);
+    } catch (e) {
+      setError(e);
+    }
+  };
 
   useEffect(() => {
     GetSlides();
+    fetchHistoryMsg();
   }, []);
 
   const GetSlides = async () => {
@@ -34,22 +57,36 @@ function ParentcraftChatroom() {
         setActiveSlides(res.data[0]);
       }
     } catch (e) {
-      console.log(e);
+      setError(e);
+    }
+  };
+
+  const toggleChatroomFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      chatroom_ref.current.requestFullscreen();
     }
   };
 
   return (
     <div className="chatroom row">
-      <div className="slides col">
+      <div className="slides row">
         {loading ? (
           <div className="loader"></div>
         ) : (
           <>
-            {activeSlides && (
-              <iframe src={activeSlides.slides_url} frameBorder="0"></iframe>
-            )}
-
-            <div className="slides_options row">
+            <div
+              className={`slides_options col ${hideMenu ? "hide_options" : ""}`}
+            >
+              <span
+                onClick={() => {
+                  setHideMenu((prev) => !prev);
+                }}
+                className="material-symbols-outlined menu_btn"
+              >
+                {hideMenu ? "list" : "chevron_left"}
+              </span>
               {data?.map((item, index) => (
                 <div
                   key={index}
@@ -62,10 +99,20 @@ function ParentcraftChatroom() {
                 </div>
               ))}
             </div>
+            {activeSlides && (
+              <iframe
+                allowfullscreen="true"
+                src={activeSlides.slides_url}
+                frameBorder="0"
+              ></iframe>
+            )}
           </>
         )}
       </div>
-      <div className={`sidechat col ${hideChat ? "hidechat" : ""}`}>
+      <div
+        ref={chatroom_ref}
+        className={`sidechat col ${hideChat ? "hidechat" : ""}`}
+      >
         <div
           className="toggle_btn"
           onClick={() => setHideChat((prev) => !prev)}
@@ -82,6 +129,12 @@ function ParentcraftChatroom() {
             <span>Parentcraft Chatroom</span>
             <span className="status">{presenceData?.length} online</span>
           </div>
+          <span
+            onClick={toggleChatroomFullscreen}
+            className="material-symbols-outlined fullscreen_btn"
+          >
+            fullscreen
+          </span>
         </div>
         <div className="chat_log col">
           {chatLog.map((info, index) => {
@@ -113,6 +166,14 @@ function ParentcraftChatroom() {
                   <div className="time">
                     {epochToDateTime(info.timestamp).time}
                   </div>
+                </div>
+              );
+            }
+            if (info.name == "announcement") {
+              return (
+                <div key={index} className="announcement">
+                  <strong>{info.data.from}</strong> changed name to{" "}
+                  <strong>{info.data.to}</strong>
                 </div>
               );
             }
