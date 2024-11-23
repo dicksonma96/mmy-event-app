@@ -56,6 +56,77 @@ $accent1: #2c82fb;
   }
 }
 
+.event_list {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  width: 100%;
+  gap: 10px;
+  .event_item {
+    border: solid 1px rgb(200, 200, 200);
+    padding: 15px;
+
+    a {
+      text-decoration: underline;
+      font-size: 12px;
+    }
+
+    .toggle_btn {
+      width: 150px;
+      border: solid 1px rgb(200, 200, 200);
+      position: relative;
+      background-color: rgb(200, 200, 200);
+      cursor: pointer;
+      span {
+        font-size: 12px;
+        padding: 10px;
+        flex: 1;
+        text-align: center;
+      }
+      .ball {
+        position: absolute;
+        width: 50%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        background-color: white;
+      }
+    }
+    .toggleActive {
+      background-color: rgb(16, 177, 77);
+      color: white;
+      .ball {
+        left: 50%;
+      }
+    }
+  }
+}
+
+.chatlog_list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  .chatlog_item {
+    border: solid 1px rgb(200, 200, 200);
+    padding: 15px;
+    cursor: pointer;
+    .download_btn {
+      width: 100%;
+      font-size: 14px;
+      padding: 5px;
+      background-color: #068125;
+      color: white;
+      margin-top: 10px;
+      justify-content: center;
+      span {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
 .admin_content {
   padding: 2em;
   .admin_header {

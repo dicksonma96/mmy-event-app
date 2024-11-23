@@ -23,8 +23,7 @@ function MainNav() {
     },
     {
       icon: ParentcraftCN,
-      path: "/admin/parentcraft_cn",
-      disabled: true,
+      path: "/admin/parentcraftCN",
     },
     {
       icon: Babyfest,

@@ -12,7 +12,7 @@ async function ParentcraftLayout({ children }) {
   const db = await getDatabase();
   const collection = db.collection("event_config");
 
-  const data = await collection.find({ event: "parentcraft" }).toArray();
+  const data = await collection.find({ event: "parentcraftCN" }).toArray();
 
   if (data[0].online == false) {
     let redirectUrl =

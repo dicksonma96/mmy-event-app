@@ -1,0 +1,12 @@
+html {
+  overscroll-behavior: none;
+}
+
+.chat_error {
+  align-items: center;
+  margin: auto;
+  gap: 1em;
+  justify-content: center;
+  cursor: pointer;
+  height: 30em;
+}

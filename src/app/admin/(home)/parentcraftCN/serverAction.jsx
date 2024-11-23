@@ -2,11 +2,11 @@
 import getDatabase from "@/lib/mongo/mongoConnection";
 import { ObjectId } from "mongodb";
 import * as Ably from "ably";
-import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
+import { PARENTCRAFT_CN_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 //--------------Workshops---------------------------
 
 async function clearChannelHistory() {
-  const channelName = PARENTCRAFT_ABLY_CHAT_CHANNEL;
+  const channelName = PARENTCRAFT_CN_ABLY_CHAT_CHANNEL;
   const ably = new Ably.Rest(process.env.ABLY_API);
   const channel = ably.channels.get(channelName);
   try {
@@ -26,12 +26,12 @@ export async function getConfig() {
     .aggregate([
       {
         $match: {
-          event: { $eq: "parentcraft" },
+          event: { $eq: "parentcraftCN" },
         },
       },
       {
         $lookup: {
-          from: "parentcraft-agenda",
+          from: "parentcraftCN-agenda",
           localField: "agenda",
           foreignField: "_id",
           as: "agenda",
@@ -42,7 +42,7 @@ export async function getConfig() {
       },
       {
         $lookup: {
-          from: "parentcraft-speakers",
+          from: "parentcraftCN-speakers",
           localField: "agenda.speakers",
           foreignField: "_id",
           as: "agenda.speakers",
@@ -64,7 +64,7 @@ export async function setActive(input) {
     const collection = await db.collection("event_config");
     let data = await collection.updateOne(
       {
-        event: "parentcraft",
+        event: "parentcraftCN",
       },
       {
         $set: {
@@ -83,7 +83,7 @@ export async function getAgenda(query) {
   try {
     const entries = 5;
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-agenda");
+    const collection = db.collection("parentcraftCN-agenda");
 
     const filter = {};
     const totalDocuments = await collection.countDocuments(filter);
@@ -103,16 +103,16 @@ export async function getAgenda(query) {
         // },
         {
           $lookup: {
-            from: "parentcraft-speakers", // The collection to join with (speakers)
-            localField: "speakers", // The field in parentcraft-agenda (array of speaker ObjectIds)
+            from: "parentcraftCN-speakers", // The collection to join with (speakers)
+            localField: "speakers", // The field in parentcraftCN-agenda (array of speaker ObjectIds)
             foreignField: "_id", // The field in speakers collection (the _id field)
             as: "speakers", // The name of the new array field to store the speaker info
           },
         },
         {
           $lookup: {
-            from: "parentcraft-sponsors", // The collection to join with (speakers)
-            localField: "sponsors", // The field in parentcraft-agenda (array of speaker ObjectIds)
+            from: "parentcraftCN-sponsors", // The collection to join with (speakers)
+            localField: "sponsors", // The field in parentcraftCN-agenda (array of speaker ObjectIds)
             foreignField: "_id", // The field in speakers collection (the _id field)
             as: "sponsors", // The name of the new array field to store the speaker info
           },
@@ -163,7 +163,7 @@ export async function getAgenda(query) {
 export async function getSpeakersOptions() {
   try {
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-speakers");
+    const collection = db.collection("parentcraftCN-speakers");
     const filter = {};
     const data = await collection.find(filter).toArray();
     let return_data = JSON.parse(JSON.stringify(data));
@@ -176,7 +176,7 @@ export async function getSpeakersOptions() {
 export async function getSponsorsOptions() {
   try {
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-sponsors");
+    const collection = db.collection("parentcraftCN-sponsors");
     const filter = {};
     const data = await collection.find(filter).toArray();
     let return_data = JSON.parse(JSON.stringify(data));
@@ -196,7 +196,7 @@ export async function saveAgenda(input) {
     } else {
       filter = { _id: new ObjectId() };
     }
-    const collection = await db.collection("parentcraft-agenda");
+    const collection = await db.collection("parentcraftCN-agenda");
     let data = await collection.updateOne(
       filter,
       {
@@ -225,7 +225,7 @@ export async function saveAgenda(input) {
 export async function deleteAgenda(input) {
   try {
     const db = await getDatabase();
-    const collection = await db.collection("parentcraft-agenda");
+    const collection = await db.collection("parentcraftCN-agenda");
     let data = await collection.deleteOne({
       _id: ObjectId.createFromHexString(input._id),
     });
@@ -243,7 +243,7 @@ export async function getSpeakers(query) {
   try {
     const entries = 5;
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-speakers");
+    const collection = db.collection("parentcraftCN-speakers");
 
     const filter = {};
     const totalDocuments = await collection.countDocuments(filter);
@@ -279,7 +279,7 @@ export async function updateSpeaker(input) {
     } else {
       filter = { _id: new ObjectId() };
     }
-    const collection = await db.collection("parentcraft-speakers");
+    const collection = await db.collection("parentcraftCN-speakers");
     let data = await collection.updateOne(
       filter,
       {
@@ -303,7 +303,7 @@ export async function updateSpeaker(input) {
 export async function deleteSpeaker(input) {
   try {
     const db = await getDatabase();
-    const collection = await db.collection("parentcraft-speakers");
+    const collection = await db.collection("parentcraftCN-speakers");
     let data = await collection.deleteOne({
       _id: ObjectId.createFromHexString(input._id),
     });
@@ -318,7 +318,7 @@ export async function getSponsors(query) {
   try {
     const entries = 5;
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-sponsors");
+    const collection = db.collection("parentcraftCN-sponsors");
 
     const filter = {};
     const totalDocuments = await collection.countDocuments(filter);
@@ -353,7 +353,7 @@ export async function updateSponsor(input) {
     } else {
       filter = { _id: new ObjectId() };
     }
-    const collection = await db.collection("parentcraft-sponsors");
+    const collection = await db.collection("parentcraftCN-sponsors");
     let data = await collection.updateOne(
       filter,
       {
@@ -375,7 +375,7 @@ export async function updateSponsor(input) {
 export async function deleteSponsor(input) {
   try {
     const db = await getDatabase();
-    const collection = await db.collection("parentcraft-sponsors");
+    const collection = await db.collection("parentcraftCN-sponsors");
     let data = await collection.deleteOne({
       _id: ObjectId.createFromHexString(input._id),
     });
@@ -392,7 +392,7 @@ export async function deleteSponsor(input) {
 export async function getSlider() {
   try {
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-sliders");
+    const collection = db.collection("parentcraftCN-sliders");
 
     const filter = {};
 
@@ -413,7 +413,7 @@ export async function getSlider() {
 export async function updateSliderPosition(sortedData) {
   try {
     const db = await getDatabase();
-    const collection = db.collection("parentcraft-sliders");
+    const collection = db.collection("parentcraftCN-sliders");
 
     const bulkOperations = sortedData.map((item) => ({
       updateOne: {
@@ -439,7 +439,7 @@ export async function updateSlider(input) {
     } else {
       filter = { _id: new ObjectId() };
     }
-    const collection = await db.collection("parentcraft-sliders");
+    const collection = await db.collection("parentcraftCN-sliders");
     let data = await collection.updateOne(
       filter,
       {
@@ -464,7 +464,7 @@ export async function updateSlider(input) {
 export async function deleteSlider(input) {
   try {
     const db = await getDatabase();
-    const collection = await db.collection("parentcraft-sliders");
+    const collection = await db.collection("parentcraftCN-sliders");
     let data = await collection.deleteOne({
       _id: ObjectId.createFromHexString(input._id),
     });
@@ -486,7 +486,7 @@ export async function getSpeakerSlides() {
       .aggregate([
         {
           $match: {
-            event: { $eq: "parentcraft" },
+            event: { $eq: "parentcraftCN" },
           },
         },
         {
@@ -511,7 +511,7 @@ export async function updateSpeakerSlides(input) {
     const collection = db.collection("event_config");
     const data = await collection.updateOne(
       {
-        event: "parentcraft",
+        event: "parentcraftCN",
       },
       {
         $set: {

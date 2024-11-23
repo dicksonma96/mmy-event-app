@@ -1,5 +1,5 @@
 "use client";
-import { ABLY_API, PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
+import { ABLY_API, PARENTCRAFT_CN_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 import * as Ably from "ably";
 import { AblyProvider, ChannelProvider } from "ably/react";
 
@@ -11,7 +11,7 @@ const client = new Ably.Realtime({
 const AblyContainer = ({ children }) => {
   return (
     <AblyProvider client={client}>
-      <ChannelProvider channelName={PARENTCRAFT_ABLY_CHAT_CHANNEL}>
+      <ChannelProvider channelName={PARENTCRAFT_CN_ABLY_CHAT_CHANNEL}>
         {children}
       </ChannelProvider>
     </AblyProvider>

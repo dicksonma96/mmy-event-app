@@ -9,12 +9,12 @@ function Parentcraft() {
   return (
     <div className="admin_content col">
       <div className="admin_header row">
-        <div className="title">PARENTCRAFT</div>
+        <div className="title">PARENTCRAFT CN</div>
 
         <Link
           style={{ marginLeft: "auto" }}
           className="view_btn btn1"
-          href={"/parentcraft"}
+          href={"/parentcraftCN"}
           target="_blank"
         >
           View Site
@@ -22,7 +22,7 @@ function Parentcraft() {
         <Link
           style={{ marginLeft: "1em" }}
           className="view_btn btn1"
-          href={"/admin/parentcraft-chatroom"}
+          href={"/admin/parentcraftCN-chatroom"}
           target="_blank"
         >
           Speaker Chatroom
@@ -30,7 +30,7 @@ function Parentcraft() {
         <Link
           style={{ marginLeft: "1em" }}
           className="view_btn btn1"
-          href={"/admin/parentcraft/chatlog"}
+          href={"/admin/parentcraftCN/chatlog"}
         >
           Chat Log
         </Link>

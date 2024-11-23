@@ -1,9 +1,19 @@
+"use client";
 import React, { useEffect } from "react";
 
 function ErrorModule({ error, retryFunc }) {
   useEffect(() => {
     console.log(error);
   }, []);
+
+  const handleRetry = () => {
+    if (retryFunc) {
+      retryFunc();
+      return;
+    }
+    window.location.reload();
+  };
+
   function ShowErrorMessage() {
     if (typeof error === "string" || error instanceof String) return error;
     if (error?.message) {
@@ -13,7 +23,7 @@ function ErrorModule({ error, retryFunc }) {
   return (
     <div className="error_module col">
       <span>{ShowErrorMessage()}</span>
-      <div onClick={retryFunc} className="btn2">
+      <div onClick={handleRetry} className="btn2">
         Try Again
       </div>
     </div>

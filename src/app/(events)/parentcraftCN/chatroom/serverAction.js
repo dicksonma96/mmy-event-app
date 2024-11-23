@@ -1,18 +1,16 @@
 "use server";
 import getDatabase from "@/lib/mongo/mongoConnection";
-import * as Ably from "ably";
-import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 
 // Server-side action callable by the client
 export async function SaveMessage(messageInfo) {
   const db = await getDatabase();
   const eventConfig = await db.collection("event_config");
 
-  const currentWorkshop = await eventConfig.findOne({ event: "parentcraft" });
+  const currentWorkshop = await eventConfig.findOne({ event: "parentcraftCN" });
   if (currentWorkshop == null || currentWorkshop?.agenda == null)
     return { success: false, message: "No active workshop found" };
 
-  const collection = await db.collection("parentcraft-chatlog");
+  const collection = await db.collection("parentcraftCN-chatlog");
   if (!messageInfo || messageInfo.message == "") {
     return { success: false, message: "Message content is required" };
   }

@@ -4,7 +4,7 @@ import ChatIllustration from "@/assets/img/parentcraft/chat_illustration.png";
 import Image from "next/image";
 import Modal from "../component/Modal";
 import { useChannel, usePresenceListener, usePresence } from "ably/react";
-import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
+import { PARENTCRAFT_CN_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";
 import "./chat.css";
@@ -21,15 +21,20 @@ function Chat() {
   const [chatLog, setChatLog] = useState([]);
 
   const { channel, publish, connectionError, channelError } = useChannel(
-    PARENTCRAFT_ABLY_CHAT_CHANNEL,
+    PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
     (message) => {
       console.log(message);
       if (message.name == "history-cleared") setChatLog([]);
       else setChatLog((prev) => [message, ...prev]);
     }
   );
-  const { updateStatus } = usePresence(PARENTCRAFT_ABLY_CHAT_CHANNEL, "online");
-  const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
+  const { updateStatus } = usePresence(
+    PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+    "online"
+  );
+  const { presenceData } = usePresenceListener(
+    PARENTCRAFT_CN_ABLY_CHAT_CHANNEL
+  );
 
   const fetchHistoryMsg = async () => {
     try {
@@ -58,7 +63,7 @@ function Chat() {
   };
 
   useEffect(() => {
-    setName(getCookie("parentcraft_chat_name"));
+    setName(getCookie("parentcraftCN_chat_name"));
     fetchHistoryMsg();
     setMounted(true);
     return () => {
@@ -77,14 +82,15 @@ function Chat() {
   const setChatName = (e) => {
     if (e.target.checkValidity()) {
       e.preventDefault();
-      let guest_name = "Guest" + " " + getCookie("parentcraft_uid").slice(0, 5);
+      let guest_name =
+        "Guest" + " " + getCookie("parentcraftCN_uid").slice(0, 5);
       if (chatAnony) {
         setName(guest_name);
       } else {
         const formData = new FormData(e.target);
         const _name = formData.get("name");
         setName(_name);
-        setCookie("parentcraft_chat_name", _name, {
+        setCookie("parentcraftCN_chat_name", _name, {
           maxAge: daysToSeconds(1),
         });
         publish("announcement", {
@@ -107,11 +113,11 @@ function Chat() {
             <span className="material-symbols-outlined">forum</span>
           </div>
           <div className="header_text col">
-            <span>Parentcraft Chatroom</span>
+            <span>新手爸妈聊天室</span>
             <span className="status">{presenceData?.length} online</span>
           </div>
           <div onClick={showNameModal} className="update_name s_btn">
-            Update Name
+            更新名字
           </div>
         </div>
         {mounted ? (
@@ -123,11 +129,11 @@ function Chat() {
           ) : (
             <div className="start_chat col">
               <Image src={ChatIllustration} alt="chat" />
-              <h2>JOIN THE CONVERSATION!</h2>
-              <p>Be Part of the Discussion: Enter the Chat Now!</p>
+              <h2>加入聊天室!</h2>
+              <p>参与讨论：立即加入聊天室!</p>
 
               <div className="btn1" onClick={showNameModal}>
-                Chat Now
+                立即聊天！
               </div>
             </div>
           )
@@ -151,11 +157,11 @@ function Chat() {
                   : {}
               }
             >
-              <span className="label">Tell us your name 😊</span>
+              <span className="label">告诉我们你的名字 😊</span>
               <input
                 type="text"
                 name="name"
-                placeholder="Your Name"
+                placeholder="你的名字"
                 required={!chatAnony}
               />
             </div>
@@ -167,15 +173,15 @@ function Chat() {
               <span className="material-symbols-outlined">
                 {chatAnony ? "check_box" : "check_box_outline_blank"}
               </span>
-              <span>Chat Anonymously</span>
+              <span>匿名聊天</span>
             </div>
 
             <div className="row btns">
               <div className="btn_cancel" onClick={closeNameModal}>
-                Cancel
+                取消
               </div>
               <button className="btn1" type="submit">
-                Chat Now
+                加入
               </button>
             </div>
           </form>
@@ -186,7 +192,7 @@ function Chat() {
 }
 
 function ChatLog({ chatLog }) {
-  const uid = getCookie("parentcraft_uid");
+  const uid = getCookie("parentcraftCN_uid");
   return (
     <div className="chat_log col">
       {chatLog.map((info, index) => {
@@ -308,7 +314,7 @@ function ChatInput({ SendMessage, name }) {
     try {
       setLoading(true);
       let res = await SaveMessage({
-        userId: getCookie("parentcraft_uid"),
+        userId: getCookie("parentcraftCN_uid"),
         name: name || "Anonymous",
         message: msg,
         timestamp: new Date(),
