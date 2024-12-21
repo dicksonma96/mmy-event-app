@@ -83,6 +83,7 @@ function ParentcraftChatroom() {
           <>
             <div
               className={`slides_options col ${hideMenu ? "hide_options" : ""}`}
+              style={{ overflow: hideMenu ? "visible" : "auto" }}
             >
               <span
                 onClick={() => {
