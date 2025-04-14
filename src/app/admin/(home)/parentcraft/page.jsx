@@ -3,6 +3,7 @@ import Workshop from "./Workshop";
 import Contributors from "./Contributors";
 import { ParentcraftContextProvider } from "./Context";
 import Events from "./Events";
+import ZoomLink from "./ZoomLink";
 import AdminSlides from "./AdminSlides";
 import Link from "next/link";
 function Parentcraft() {
@@ -39,8 +40,9 @@ function Parentcraft() {
         <ParentcraftContextProvider>
           <Workshop />
           <Contributors />
-          <Events />
+          {/* <Events /> */}
           <AdminSlides />
+          <ZoomLink />
         </ParentcraftContextProvider>
       </div>
     </div>

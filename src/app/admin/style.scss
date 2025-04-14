@@ -7,6 +7,7 @@ $accent1: #2c82fb;
 
 .admin {
   min-height: 100vh;
+  min-height: 100dvh;
   .sidenav {
     background: linear-gradient(#f5f5f8, #edf0fb);
     gap: 1em;
@@ -54,6 +55,36 @@ $accent1: #2c82fb;
     border: solid 0.1em red;
     box-shadow: none;
   }
+
+  .toggle_btn {
+    width: 200px;
+    border: solid 1px rgb(200, 200, 200);
+    position: relative;
+    background-color: rgb(200, 200, 200);
+    cursor: pointer;
+    span {
+      font-size: 12px;
+      padding: 10px;
+      flex: 1;
+      text-align: center;
+    }
+    .ball {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      background-color: white;
+    }
+  }
+  .toggleActive {
+    background-color: rgb(16, 177, 77);
+    color: white;
+    .ball {
+      left: 50%;
+    }
+  }
 }
 
 .event_list {
@@ -69,36 +100,6 @@ $accent1: #2c82fb;
     a {
       text-decoration: underline;
       font-size: 12px;
-    }
-
-    .toggle_btn {
-      width: 150px;
-      border: solid 1px rgb(200, 200, 200);
-      position: relative;
-      background-color: rgb(200, 200, 200);
-      cursor: pointer;
-      span {
-        font-size: 12px;
-        padding: 10px;
-        flex: 1;
-        text-align: center;
-      }
-      .ball {
-        position: absolute;
-        width: 50%;
-        height: 100%;
-        left: 0;
-        top: 0;
-        z-index: 2;
-        background-color: white;
-      }
-    }
-    .toggleActive {
-      background-color: rgb(16, 177, 77);
-      color: white;
-      .ball {
-        left: 50%;
-      }
     }
   }
 }

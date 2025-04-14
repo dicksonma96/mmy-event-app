@@ -26,11 +26,11 @@ function page() {
     }
   };
 
-  const UpdateStatus = async (event, flag) => {
+  const UpdateStatus = async (eventName, target, flag) => {
     try {
       setLoading(true);
 
-      let res = await setActive(event, flag);
+      let res = await setActive(eventName, target, flag);
       if (!res.success) throw res.message;
 
       let res2 = await getConfig();
@@ -83,10 +83,32 @@ function page() {
                   className={`row toggle_btn ${
                     item.online ? "toggleActive" : ""
                   }`}
-                  onClick={() => UpdateStatus(item.event, !item.online)}
+                  onClick={() =>
+                    UpdateStatus(item.event, "online", !item.online)
+                  }
                 >
                   <span>ONLINE</span>
                   <span>OFFLINE</span>
+                  <div className="ball"></div>
+                </div>
+              </div>
+              <br />
+              <div className="status col">
+                <span style={{ fontSize: "12px" }}>User Slides View:</span>
+                <div
+                  className={`row toggle_btn ${
+                    item.disable_client_slides ? "toggleActive" : ""
+                  }`}
+                  onClick={() =>
+                    UpdateStatus(
+                      item.event,
+                      "disable_client_slides",
+                      !item.disable_client_slides
+                    )
+                  }
+                >
+                  <span>DISABLE</span>
+                  <span>ENABLE</span>
                   <div className="ball"></div>
                 </div>
               </div>

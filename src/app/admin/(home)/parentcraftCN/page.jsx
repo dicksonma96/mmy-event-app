@@ -5,6 +5,7 @@ import { ParentcraftContextProvider } from "./Context";
 import Events from "./Events";
 import AdminSlides from "./AdminSlides";
 import Link from "next/link";
+import ZoomLink from "./ZoomLink";
 function Parentcraft() {
   return (
     <div className="admin_content col">
@@ -39,8 +40,9 @@ function Parentcraft() {
         <ParentcraftContextProvider>
           <Workshop />
           <Contributors />
-          <Events />
+          {/* <Events /> */}
           <AdminSlides />
+          <ZoomLink />
         </ParentcraftContextProvider>
       </div>
     </div>

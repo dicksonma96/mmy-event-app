@@ -20,38 +20,42 @@ async function clearChannelHistory() {
 }
 
 export async function getConfig() {
-  const db = await getDatabase();
-  const collection = db.collection("event_config");
-  const data = await collection
-    .aggregate([
-      {
-        $match: {
-          event: { $eq: "parentcraft" },
+  try {
+    const db = await getDatabase();
+    const collection = db.collection("event_config");
+    const data = await collection
+      .aggregate([
+        {
+          $match: {
+            event: { $eq: "parentcraft" },
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "parentcraft-agenda",
-          localField: "agenda",
-          foreignField: "_id",
-          as: "agenda",
+        {
+          $lookup: {
+            from: "parentcraft-agenda",
+            localField: "agenda",
+            foreignField: "_id",
+            as: "agenda",
+          },
         },
-      },
-      {
-        $unwind: "$agenda",
-      },
-      {
-        $lookup: {
-          from: "parentcraft-speakers",
-          localField: "agenda.speakers",
-          foreignField: "_id",
-          as: "agenda.speakers",
+        {
+          $unwind: "$agenda",
         },
-      },
-    ])
-    .toArray();
-  let return_data = JSON.parse(JSON.stringify(data));
-  return return_data[0];
+        {
+          $lookup: {
+            from: "parentcraft-speakers",
+            localField: "agenda.speakers",
+            foreignField: "_id",
+            as: "agenda.speakers",
+          },
+        },
+      ])
+      .toArray();
+    let return_data = JSON.parse(JSON.stringify(data));
+    return { data: return_data[0], success: true };
+  } catch (e) {
+    return { message: e.message, success: false };
+  }
 }
 
 export async function setActive(input) {
@@ -89,7 +93,7 @@ export async function getAgenda(query) {
     const totalDocuments = await collection.countDocuments(filter);
 
     const activeAgenda = await getConfig();
-    const activeAgendaId = activeAgenda?.agenda?._id || null;
+    const activeAgendaId = activeAgenda?.data.agenda?._id || null;
     const activeAgendaIdObject = activeAgendaId
       ? ObjectId.createFromHexString(activeAgendaId)
       : null;
@@ -516,6 +520,29 @@ export async function updateSpeakerSlides(input) {
       {
         $set: {
           speaker_slides: input,
+        },
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+//----- Zoom----
+
+export async function updateZoom(zoom_info) {
+  try {
+    const db = await getDatabase();
+    console.log(zoom_info);
+    const collection = await db.collection("event_config");
+    await collection.updateOne(
+      {
+        event: "parentcraft",
+      },
+      {
+        $set: {
+          zoom: zoom_info,
         },
       }
     );

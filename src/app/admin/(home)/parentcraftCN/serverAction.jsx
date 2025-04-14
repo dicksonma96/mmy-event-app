@@ -524,3 +524,26 @@ export async function updateSpeakerSlides(input) {
     return { success: false, message: error.message };
   }
 }
+
+//----- Zoom----
+
+export async function updateZoom(zoom_info) {
+  try {
+    const db = await getDatabase();
+    console.log(zoom_info);
+    const collection = await db.collection("event_config");
+    await collection.updateOne(
+      {
+        event: "parentcraftCN",
+      },
+      {
+        $set: {
+          zoom: zoom_info,
+        },
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}

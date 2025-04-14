@@ -14,6 +14,8 @@ async function ParentcraftLayout({ children }) {
 
   const data = await collection.find({ event: "parentcraft" }).toArray();
 
+  // console.log(data);
+
   if (data[0].online == false) {
     let redirectUrl =
       data[0].offline_redirect || "https://www.motherhood.com.my/home";

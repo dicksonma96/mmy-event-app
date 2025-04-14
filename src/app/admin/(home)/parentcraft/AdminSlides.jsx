@@ -116,7 +116,12 @@ function AdminSlides() {
                     </div>
 
                     <div className="input col">
-                      <span className="label">SLIDES URL</span>
+                      <span className="label">
+                        SLIDES URL{" "}
+                        <em
+                          style={{ fontSize: "10px" }}
+                        >{`(OneDrive > Your PPT File > File > Share > Embed this presentation > Copy)`}</em>
+                      </span>
                       <input
                         type="text"
                         value={item.slides_url}
@@ -125,6 +130,12 @@ function AdminSlides() {
 
                           if (input.includes("docs.google.com")) {
                             input = input.replace(/edit.*$/, "embed");
+                          }
+
+                          if (input.includes("<iframe")) {
+                            input = input.match(
+                              /<iframe[^>]+src=["']([^"']+)["']/i
+                            )[1];
                           }
 
                           setData((prev) =>

@@ -13,7 +13,7 @@ export async function getConfig() {
   };
 }
 
-export async function setActive(event, flag) {
+export async function setActive(event, target, flag) {
   try {
     const db = await getDatabase();
     const collection = await db.collection("event_config");
@@ -23,7 +23,7 @@ export async function setActive(event, flag) {
       },
       {
         $set: {
-          online: flag,
+          [target]: flag,
         },
       }
     );
