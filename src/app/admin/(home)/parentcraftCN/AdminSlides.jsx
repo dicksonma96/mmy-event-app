@@ -120,7 +120,7 @@ function AdminSlides() {
                         SLIDES URL{" "}
                         <em
                           style={{ fontSize: "10px" }}
-                        >{`(OneDrive > Your PPT File > File > Share > Embed this presentation > Copy)`}</em>
+                        >{`(OneDrive > Your PPT File > File > Share > Manage Access > Links Tab > Copy)`}</em>
                       </span>
                       <input
                         type="text"
