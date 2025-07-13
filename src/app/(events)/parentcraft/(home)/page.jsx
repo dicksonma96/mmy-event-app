@@ -29,6 +29,8 @@ async function Agenda() {
         },
       ])
       .toArray();
+
+    console.log(data[0]);
     return (
       <>
         <div className="section_title">TODAY'S AGENDA</div>

@@ -33,7 +33,7 @@ function MainNav() {
     {
       icon: MCA,
       path: "/admin/mca",
-      disabled: true,
+      disabled: false,
     },
   ];
 
