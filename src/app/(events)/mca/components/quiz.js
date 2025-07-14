@@ -5,6 +5,7 @@ import Banner1 from "@/assets/img/mca/quiz_banner1.jpg";
 import Banner2 from "@/assets/img/mca/quiz_banner2.jpg";
 import { SubmitQuizAnswers } from "../serverAction";
 import useMcaStore from "../mcaStore";
+import toast from "react-hot-toast";
 
 function getAlphabetByNumber(num) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -15,26 +16,24 @@ function getAlphabetByNumber(num) {
 }
 function Quiz({ quizNo = 1 }) {
   const eventInfo = useMcaStore((state) => state.eventInfo);
-  const quizzes = eventInfo[`quiz${quizNo}`];
+  const quizzes = eventInfo?.[`quiz${quizNo}`];
 
   const answers = useMcaStore((state) => state.quizAnswers[`quiz${quizNo}`]);
   const setQuizAnswer = useMcaStore((state) => state.setQuizAnswer);
   const setLoading = useMcaStore((state) => state.setLoading);
   const GetEventInfo = useMcaStore((state) => state.GetEventInfo);
-  const setError = useMcaStore((state) => state.setError);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      let res = await SubmitQuizAnswers(eventInfo.me.seat, quizNo, answers);
+      let res = await SubmitQuizAnswers(eventInfo?.me.seat, quizNo, answers);
       if (res.success) {
         GetEventInfo();
       } else {
         throw { message: res.message };
       }
     } catch (e) {
-      console.log(e);
-      setError(e.message);
+      toast.error(e.message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +47,7 @@ function Quiz({ quizNo = 1 }) {
         alt="MCA 2025 Quiz"
       />
 
-      {eventInfo.status == "pending" && (
+      {eventInfo?.status == "pending" && (
         <div className="pending_quiz col">
           <h1>COMING SOON</h1>
           <em>
@@ -58,9 +57,9 @@ function Quiz({ quizNo = 1 }) {
         </div>
       )}
 
-      {eventInfo.status == "ongoing" && (
+      {eventInfo?.status == "ongoing" && (
         <>
-          {eventInfo.me?.[`quiz${quizNo}`] ? (
+          {eventInfo?.me?.[`quiz${quizNo}`] ? (
             <h4>
               "You've completed the quiz! The results are being finalized — stay
               tuned!"
@@ -80,7 +79,7 @@ function Quiz({ quizNo = 1 }) {
                 quizNo={quizNo}
               />
             ))}
-            {eventInfo.me?.[`quiz${quizNo}`] == null && (
+            {eventInfo?.me?.[`quiz${quizNo}`] == null && (
               <>
                 {!answers.includes(null) && (
                   <button className="cta_btn" onClick={handleSubmit}>

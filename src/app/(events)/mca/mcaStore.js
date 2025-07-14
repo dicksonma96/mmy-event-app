@@ -1,16 +1,16 @@
 import { create } from "zustand";
-import { GetEventInfo } from "./serverAction";
-import { getCookie, setCookie } from "@/lib/cookie";
+import { GetEventInfo as GetEventInfoServer } from "./serverAction";
+import { getCookie, setCookie, deleteCookie } from "@/lib/cookie";
 import toast from "react-hot-toast";
 
 const useMcaStore = create((set, get) => ({
   eventInfo: null,
   setEventInfo: (info) => set({ eventInfo: info }),
-  GetEventInfo: async (seatNumber = null) => {
+  GetEventInfo: async (seatNumber = null, reset = false) => {
     try {
       get().setLoading(true);
       seatNumber = seatNumber ? seatNumber : getCookie("seatNumber");
-      let res = await GetEventInfo(seatNumber);
+      let res = await GetEventInfoServer(reset ? null : seatNumber);
       if (res.success) {
         get().setEventInfo(res.data);
 
@@ -29,8 +29,8 @@ const useMcaStore = create((set, get) => ({
         throw { message: res.message };
       }
     } catch (e) {
-      console.log(e);
       toast.error(e.message);
+      deleteCookie("seatNumber");
       return false;
     } finally {
       get().setLoading(false);

@@ -27,7 +27,7 @@ function MCA() {
   const loading = useMcaAdminStore((s) => s.loading);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const EVENT_STATUS = ["pending", "ongoing", "ended"];
+  const EVENT_STATUS = ["pending", "ongoing", "ended", "winner"];
 
   useEffect(() => {
     GetEventInfo();
@@ -125,6 +125,16 @@ function MCA() {
                 return <GuestRow data={item} key={index} />;
               })}
             </div>
+          </div>
+        </div>
+        <br />
+        <div className="module col">
+          <div className="module_header row">
+            <h2>QUIZ MANAGEMENT</h2>
+          </div>
+          <div className="row" style={{ gap: "100px" }}>
+            <SetWinner quizNo={1} />
+            <SetWinner quizNo={2} />
           </div>
         </div>
       </div>
@@ -317,6 +327,98 @@ function AddGuest() {
           Add Guest
         </div>
       )}
+    </div>
+  );
+}
+
+function SetWinner({ quizNo }) {
+  const [winner, setWinner] = useState(null);
+  const eventInfo = useMcaAdminStore((s) => s.eventInfo);
+  const official_ans = eventInfo?.[`quiz${quizNo}`].map((q) => q.answer);
+
+  function getQuizScore(guest) {
+    if (guest == null) return 0;
+    let score = 0;
+
+    for (let i = 0; i < official_ans.length; i++) {
+      const correct = official_ans[i];
+      const answer = guest[i];
+
+      if (Array.isArray(correct) && Array.isArray(answer)) {
+        // Compare as sets (same length, same items, same order not required)
+        const sortedCorrect = [...correct].sort().join(",");
+        const sortedAnswer = [...answer].sort().join(",");
+        if (sortedCorrect === sortedAnswer) {
+          score++;
+        }
+      } else if (!Array.isArray(correct) && correct === answer) {
+        score++;
+      }
+    }
+
+    return score;
+  }
+
+  const winnerlist = eventInfo?.guests
+    .map((guest) => {
+      return {
+        ...guest,
+        score: getQuizScore(guest?.[`quiz${quizNo}`]),
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  function GetRandomWinner() {
+    const highestScore = Math.max(...winnerlist?.map((g) => g.score));
+    const topGuests = winnerlist?.filter((g) => g.score === highestScore);
+
+    const randomIndex = Math.floor(Math.random() * topGuests.length);
+    setWinner(topGuests[randomIndex]);
+  }
+
+  return (
+    <div className="setwinner col">
+      <h4>Quiz {quizNo} Winner</h4>
+      <div
+        className="row"
+        style={{ width: "100%", gap: "20px", fontSize: "15px" }}
+      >
+        <div className="selected_winner row">
+          {winner?.seat} - {winner?.name}
+        </div>
+        <span
+          style={{ fontSize: "20px", cursor: "pointer", marginLeft: "-52px" }}
+          onClick={GetRandomWinner}
+        >
+          🎲
+        </span>
+        <div className="btn1">Save</div>
+      </div>
+      <div className="guest_list">
+        <div className="user_table col">
+          <div className="thead" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <div className="th">Seat No</div>
+            <div className="th">Name</div>
+            <div className="th">Score</div>
+          </div>
+          <div className="tbody col">
+            {winnerlist?.map((g, index) => {
+              return (
+                <div
+                  className="tr"
+                  style={{ gridTemplateColumns: "1fr 1fr 1fr" }}
+                  key={index}
+                  onClick={() => setWinner(g)}
+                >
+                  <div className="td">{g.seat}</div>
+                  <div className="td">{g.name}</div>
+                  <div className="td">{g.score}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -779,6 +779,25 @@ $accent1: #2c82fb;
       }
     }
   }
+
+  .setwinner {
+    .selected_winner {
+      border: solid 1px black;
+      height: 28px;
+      padding: 5px 10px;
+      width: 200px;
+      flex: 1;
+      text-align: center;
+      padding-right: 40px;
+    }
+
+    .tr {
+      cursor: pointer;
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
 }
 
 .overlay {

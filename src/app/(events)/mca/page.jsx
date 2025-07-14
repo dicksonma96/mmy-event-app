@@ -8,6 +8,8 @@ import Login from "./components/login";
 import Schedule from "./components/schedule.js";
 import { useEffect, useState } from "react";
 import useMcaStore from "./mcaStore";
+import { useChannel, usePresenceListener, usePresence } from "ably/react";
+import { MCA_ABLY_CHAT_CHANNEL } from "@/lib/constant.js";
 
 export default function Home() {
   const nav = ["Schedule", "Quiz 1", "Quiz 2"];
@@ -17,6 +19,20 @@ export default function Home() {
   const loading = useMcaStore((state) => state.loading);
   const setShowLogin = useMcaStore((state) => state.setShowLogin);
   const showLogin = useMcaStore((state) => state.showLogin);
+
+  const { channel, publish, connectionError, channelError } = useChannel(
+    MCA_ABLY_CHAT_CHANNEL,
+    (message) => {
+      console.log(message);
+      if (message.name == "update-status") {
+        GetEventInfo();
+      }
+      if (message.name == "refresh-eventinfo") {
+        if (eventInfo?.me?.seat == message.data.seatNo)
+          GetEventInfo(null, true); // second param as TRUE for reset seat no
+      }
+    }
+  );
 
   useEffect(() => {
     GetEventInfo();
