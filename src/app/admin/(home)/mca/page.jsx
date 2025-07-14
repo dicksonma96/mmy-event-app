@@ -22,13 +22,15 @@ function convertArrayToAlphabet(arr) {
 
 function MCA() {
   const GetEventInfo = useMcaAdminStore((s) => s.GetEventInfo);
+  const UpdateEventStatus = useMcaAdminStore((s) => s.UpdateEventStatus);
   const eventInfo = useMcaAdminStore((s) => s.eventInfo);
   const loading = useMcaAdminStore((s) => s.loading);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const EVENT_STATUS = ["pending", "ongoing", "ended"];
+
   useEffect(() => {
-    console.log();
-    GetEventInfo("yoyoyyoyo");
+    GetEventInfo();
   }, []);
 
   const FilteredGuests = () => {
@@ -42,6 +44,10 @@ function MCA() {
         guest.brand.toLowerCase().includes(keyword)
       );
     });
+  };
+
+  const ChangeEventStatus = (status) => {
+    UpdateEventStatus(status);
   };
 
   return (
@@ -61,32 +67,64 @@ function MCA() {
         <div className="admin_header row">
           <div className="title">Motherhood Choice Awards</div>
         </div>
-
-        <div className="filter_panel row">
-          <AddGuest />
-
-          <input
-            type="text"
-            placeholder="Search by name, seat, or brand"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search_input"
-          />
-          <button className="btn">Clear</button>
-        </div>
-        <div className="user_table col">
-          <div className="thead ">
-            <div className="th">Table-Seat No</div>
-            <div className="th">Name</div>
-            <div className="th">From</div>
-            <div className="th">Quiz 1 Ans</div>
-            <div className="th">Quiz 2 Ans</div>
-            <div className="th">Actions</div>
+        <br />
+        <div className="module col">
+          <div className="module_header row">
+            <h2>EVENT STATUS</h2>
           </div>
-          <div className="tbody col">
-            {FilteredGuests()?.map((item, index) => {
-              return <GuestRow data={item} key={index} />;
+          <div className="row" style={{ gap: "10px" }}>
+            {EVENT_STATUS.map((status, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`${eventInfo?.status == status ? "btn1" : "btn2"}`}
+                  style={{ textTransform: "capitalize" }}
+                  onClick={() => ChangeEventStatus(status)}
+                >
+                  {status}
+                </div>
+              );
             })}
+          </div>
+        </div>
+        <br />
+        <div className="module col">
+          <div className="module_header row">
+            <h2>GUESTS MANAGEMENT</h2>
+          </div>
+          <div className="filter_panel row">
+            <AddGuest />
+            <input
+              type="text"
+              placeholder="Search by name, seat, or brand"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search_input"
+            />
+            <button className="btn">Clear</button>
+
+            <button
+              className="btn1"
+              onClick={() => GetEventInfo()}
+              style={{ marginLeft: "20px" }}
+            >
+              Refresh Table
+            </button>
+          </div>
+          <div className="user_table col">
+            <div className="thead ">
+              <div className="th">Table-Seat No</div>
+              <div className="th">Name</div>
+              <div className="th">From</div>
+              <div className="th">Quiz 1 Ans</div>
+              <div className="th">Quiz 2 Ans</div>
+              <div className="th">Actions</div>
+            </div>
+            <div className="tbody col">
+              {FilteredGuests()?.map((item, index) => {
+                return <GuestRow data={item} key={index} />;
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -98,6 +136,7 @@ function GuestRow({ data }) {
   const [rowInfo, setRowInfo] = useState(null);
   const [edit, setEdit] = useState(false);
   const UpdateGuest = useMcaAdminStore((s) => s.UpdateGuest);
+  const DeleteGuest = useMcaAdminStore((s) => s.DeleteGuest);
 
   useEffect(() => {
     setRowInfo(data);
@@ -113,14 +152,28 @@ function GuestRow({ data }) {
   const handleUpdate = () => {
     UpdateGuest({
       seat: data.seat,
+      name: data.name,
       updatedFields: {
         ...rowInfo,
       },
     });
   };
 
+  const handleDelete = () => {
+    let text = `Are you sure to delete ${data.seat}, ${data.name}?`;
+    if (confirm(text) == true) {
+      DeleteGuest(data);
+    }
+  };
+
   return (
-    <form className="tr" onSubmit={handleUpdate}>
+    <form
+      className="tr"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleUpdate();
+      }}
+    >
       <div className="td">
         {
           <input
@@ -196,7 +249,9 @@ function GuestRow({ data }) {
             <div className="btn" onClick={() => setEdit((prev) => !prev)}>
               Edit
             </div>
-            <div className="btn btn3">Delete</div>
+            <div className="btn btn3" onClick={handleDelete}>
+              Delete
+            </div>
           </>
         )}
       </div>
@@ -223,7 +278,10 @@ function AddGuest() {
           <form
             className="row"
             style={{ gap: "5px" }}
-            onSubmit={() => HandleAddGuest(info)}
+            onSubmit={(e) => {
+              e.preventDefault();
+              HandleAddGuest(info);
+            }}
           >
             <input
               type="text"

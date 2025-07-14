@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Banner1 from "@/assets/img/mca/quiz_banner1.jpg";
 import Banner2 from "@/assets/img/mca/quiz_banner2.jpg";
-import { useEffect, useState } from "react";
 import { SubmitQuizAnswers } from "../serverAction";
 import useMcaStore from "../mcaStore";
 
@@ -23,10 +22,6 @@ function Quiz({ quizNo = 1 }) {
   const setLoading = useMcaStore((state) => state.setLoading);
   const GetEventInfo = useMcaStore((state) => state.GetEventInfo);
   const setError = useMcaStore((state) => state.setError);
-
-  // useEffect(() => {
-  //   console.log(answers);
-  // }, [answers]);
 
   const handleSubmit = async () => {
     try {
@@ -52,36 +47,51 @@ function Quiz({ quizNo = 1 }) {
         src={quizNo == 1 ? Banner1 : Banner2}
         alt="MCA 2025 Quiz"
       />
-      {eventInfo.me?.[`quiz${quizNo}`] ? (
-        <h4>
-          "You've completed the quiz! The results are being finalized — stay
-          tuned!"
-        </h4>
-      ) : (
-        <h4>"Test Your Knowledge, Score a SKYWORTH TV!"</h4>
+
+      {eventInfo.status == "pending" && (
+        <div className="pending_quiz col">
+          <h1>COMING SOON</h1>
+          <em>
+            “Hold tight ✋! The quiz will open once the host gives the green
+            light. Stay ready 😎!”
+          </em>
+        </div>
       )}
 
-      <hr />
-      <div className="quiz_body col">
-        {quizzes?.map((item, index) => (
-          <Question
-            key={index}
-            data={{ ...item, index }}
-            selectedAns={answers[index]}
-            setAns={(ans) => setQuizAnswer(quizNo, index, ans)}
-            quizNo={quizNo}
-          />
-        ))}
-        {eventInfo.me?.[`quiz${quizNo}`] == null && (
-          <>
-            {!answers.includes(null) && (
-              <button className="cta_btn" onClick={handleSubmit}>
-                Submit
-              </button>
+      {eventInfo.status == "ongoing" && (
+        <>
+          {eventInfo.me?.[`quiz${quizNo}`] ? (
+            <h4>
+              "You've completed the quiz! The results are being finalized — stay
+              tuned!"
+            </h4>
+          ) : (
+            <h4>"Test Your Knowledge, Score a SKYWORTH TV!"</h4>
+          )}
+
+          <hr />
+          <div className="quiz_body col">
+            {quizzes?.map((item, index) => (
+              <Question
+                key={index}
+                data={{ ...item, index }}
+                selectedAns={answers[index]}
+                setAns={(ans) => setQuizAnswer(quizNo, index, ans)}
+                quizNo={quizNo}
+              />
+            ))}
+            {eventInfo.me?.[`quiz${quizNo}`] == null && (
+              <>
+                {!answers.includes(null) && (
+                  <button className="cta_btn" onClick={handleSubmit}>
+                    Submit
+                  </button>
+                )}
+              </>
             )}
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

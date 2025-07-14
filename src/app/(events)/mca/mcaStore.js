@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { GetEventInfo } from "./serverAction";
 import { getCookie, setCookie } from "@/lib/cookie";
+import toast from "react-hot-toast";
 
 const useMcaStore = create((set, get) => ({
   eventInfo: null,
@@ -23,14 +24,14 @@ const useMcaStore = create((set, get) => ({
         if (res.data.me != null) {
           setCookie("seatNumber", res.data.me.seat, 1);
         }
-        if (res.data.me.quiz1.length > 0) {
-        }
+        return true;
       } else {
         throw { message: res.message };
       }
     } catch (e) {
       console.log(e);
-      get().setError(e.message);
+      toast.error(e.message);
+      return false;
     } finally {
       get().setLoading(false);
     }
@@ -41,9 +42,6 @@ const useMcaStore = create((set, get) => ({
 
   showLogin: false,
   setShowLogin: (bool) => set({ showLogin: bool }),
-
-  error: null,
-  setError: (err) => set({ error: err }),
 
   // ✅ Add quiz answer states
   quizAnswers: {

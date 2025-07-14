@@ -3,6 +3,7 @@ import "./global.css";
 const inter = Inter({ subsets: ["latin"] });
 import Logo from "@/assets/img/admin/home.png";
 import NavigateLoader from "./NavigateLoader";
+import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "Motherhood Events",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <NavigateLoader>{children}</NavigateLoader>
+        <Toaster />
       </body>
     </html>
   );

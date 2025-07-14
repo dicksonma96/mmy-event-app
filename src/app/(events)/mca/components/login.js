@@ -41,8 +41,8 @@ function Login() {
         <button
           className="cta_btn"
           onClick={() => {
-            GetEventInfo(`${tableNo}-${seatNo}`).then(() => {
-              setShowLogin(false);
+            GetEventInfo(`${tableNo}-${seatNo}`).then((res) => {
+              if (res == true) setShowLogin(false);
             });
           }}
         >

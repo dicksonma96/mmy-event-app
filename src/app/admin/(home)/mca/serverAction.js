@@ -16,40 +16,32 @@ export async function GetEventInfo() {
   return { success: true, data: data };
 }
 
-export async function AddGuest({ name, seat, brand }) {
-  const db = await getDatabase();
-  const eventConfig = await db.collection("event_config");
+export async function AddGuest(info) {
+  try {
+    const db = await getDatabase();
+    const result = await db.collection("event_config").updateOne(
+      { event: "mca" },
+      {
+        $push: {
+          guests: {
+            ...info,
+            quiz1: [],
+            quiz2: [],
+          },
+        },
+      }
+    );
 
-  // Optional: Check for duplicate seat
-  const event = await eventConfig.findOne({ event: "mca" });
-  if (!event) return { success: false, message: "Event not found" };
-
-  const exists = event.guests.some((g) => g.seat == seat);
-  if (exists) {
-    return { success: false, message: "Seat already taken" };
-  }
-
-  const newGuest = {
-    name,
-    seat,
-    brand,
-    quiz1: null,
-    quiz2: null,
-  };
-
-  const result = await eventConfig.updateOne(
-    { event: "mca" },
-    { $push: { guests: newGuest } }
-  );
-
-  if (result.modifiedCount === 1) {
-    return { success: true, message: "Guest added successfully" };
-  } else {
-    return { success: false, message: "Failed to add guest" };
+    return result.modifiedCount == 1
+      ? { success: true, message: "Successfully added" }
+      : { success: false, message: "Failed to add guest" };
+  } catch (e) {
+    console.error("AddGuest error:", e);
+    return { success: false, message: e.message || "Unexpected error" };
   }
 }
 
-export async function EditGuest({ seat, updatedFields }) {
+export async function UpdateGuest({ seat, name, updatedFields }) {
   const db = await getDatabase();
   const eventConfig = await db.collection("event_config");
 
@@ -58,7 +50,9 @@ export async function EditGuest({ seat, updatedFields }) {
     return { success: false, message: "Event not found" };
   }
 
-  const guestIndex = event.guests.findIndex((g) => g.seat === seat);
+  const guestIndex = event.guests.findIndex(
+    (g) => g.seat == seat && g.name == name
+  );
   if (guestIndex === -1) {
     return { success: false, message: "Guest not found" };
   }
@@ -76,9 +70,51 @@ export async function EditGuest({ seat, updatedFields }) {
     { $set: updatePath }
   );
 
-  if (result.modifiedCount === 1) {
+  if (result.modifiedCount == 1) {
     return { success: true, message: "Guest updated successfully" };
   } else {
     return { success: false, message: "No changes were made" };
+  }
+}
+
+export async function DeleteGuest({ seat, name }) {
+  try {
+    const db = await getDatabase();
+    const eventConfig = db.collection("event_config");
+
+    const result = await eventConfig.updateOne(
+      { event: "mca" },
+      { $pull: { guests: { seat, name } } }
+    );
+
+    if (result.modifiedCount === 1) {
+      return { success: true, message: "Guest deleted successfully" };
+    } else {
+      return { success: false, message: "Guest not found or already deleted" };
+    }
+  } catch (e) {
+    console.error("DeleteGuest error:", e);
+    return { success: false, message: e.message || "Failed to delete guest" };
+  }
+}
+
+export async function UpdateEventStatus(status) {
+  try {
+    const db = await getDatabase();
+    const eventConfig = db.collection("event_config");
+
+    const result = await eventConfig.updateOne(
+      { event: "mca" },
+      { $set: { status } }
+    );
+
+    if (result.modifiedCount === 1) {
+      return { success: true, message: `Status updated to "${status}"` };
+    } else {
+      return { success: false, message: "No change made or event not found" };
+    }
+  } catch (e) {
+    console.error("UpdateEventStatus error:", e);
+    return { success: false, message: e.message || "Failed to update status" };
   }
 }

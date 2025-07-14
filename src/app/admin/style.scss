@@ -679,9 +679,7 @@ $accent1: #2c82fb;
 
 .mca {
   .filter_panel {
-    margin-top: 10px;
     width: 100%;
-    max-width: 1200px;
     gap: 5px;
     justify-content: flex-end;
     input {
@@ -692,7 +690,6 @@ $accent1: #2c82fb;
   .user_table {
     margin: 15px 0;
     width: 100%;
-    max-width: 1200px;
     background-color: rgb(240, 240, 240);
     border-radius: 5px;
     overflow: hidden;

@@ -1,10 +1,6 @@
 "use server";
 import getDatabase from "@/lib/mongo/mongoConnection";
 
-// pending, ongoing, ended
-
-// Server-side action callable by the client
-
 export async function GetEventInfo(seatInfo = null) {
   const db = await getDatabase();
   const eventConfig = await db.collection("event_config");

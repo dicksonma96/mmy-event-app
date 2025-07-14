@@ -505,6 +505,25 @@ body {
       border-radius: 0.5em;
       margin-bottom: 1em;
     }
+
+    .pending_quiz {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      align-items: center;
+      padding: 25px;
+      h1 {
+        font-weight: bold;
+        font-size: 30px;
+        color: $color1;
+        margin-bottom: 10px;
+      }
+      em {
+        color: white;
+        text-align: center;
+      }
+    }
+
     .quiz_content {
       z-index: 2;
       padding: 1em 0.5em;
