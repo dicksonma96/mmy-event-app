@@ -10,16 +10,16 @@ export async function GetEventInfo(seatInfo = null) {
     return { success: false, message: "No active event found" };
   }
 
-  const { status } = event;
+  const { status, winner } = event;
 
   const quiz1Filtered = event.quiz1?.map((q) => {
     const { answer, ...rest } = q;
-    return status == "ended" ? q : rest;
+    return status == "winner" ? q : rest;
   });
 
   const quiz2Filtered = event.quiz2?.map((q) => {
     const { answer, ...rest } = q;
-    return status == "ended" ? q : rest;
+    return status == "winner" ? q : rest;
   });
 
   let me = null;
@@ -39,7 +39,7 @@ export async function GetEventInfo(seatInfo = null) {
     status,
     quiz1: quiz1Filtered,
     quiz2: quiz2Filtered,
-    winner: status === "ended" ? event.winner : null,
+    winner,
   };
 
   return { success: true, data };

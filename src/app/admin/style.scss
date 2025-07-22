@@ -791,6 +791,11 @@ $accent1: #2c82fb;
       padding-right: 40px;
     }
 
+    button:disabled {
+      background: grey;
+      opacity: 0.5;
+    }
+
     .tr {
       cursor: pointer;
       &:hover {

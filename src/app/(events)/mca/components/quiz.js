@@ -6,6 +6,7 @@ import Banner2 from "@/assets/img/mca/quiz_banner2.jpg";
 import { SubmitQuizAnswers } from "../serverAction";
 import useMcaStore from "../mcaStore";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 function getAlphabetByNumber(num) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -22,6 +23,10 @@ function Quiz({ quizNo = 1 }) {
   const setQuizAnswer = useMcaStore((state) => state.setQuizAnswer);
   const setLoading = useMcaStore((state) => state.setLoading);
   const GetEventInfo = useMcaStore((state) => state.GetEventInfo);
+
+  useEffect(() => {
+    console.log(eventInfo);
+  }, [eventInfo]);
 
   const handleSubmit = async () => {
     try {
@@ -55,6 +60,52 @@ function Quiz({ quizNo = 1 }) {
             light. Stay ready 😎!”
           </em>
         </div>
+      )}
+
+      {eventInfo?.status == "ended" && (
+        <div className="pending_quiz col">
+          <h1>QUIZ ENDED</h1>
+          <em>
+            “Thank you for participating! The quiz has ended — the winner will
+            be revealed soon. Good luck!”
+          </em>
+        </div>
+      )}
+
+      {eventInfo?.status == "winner" && (
+        <>
+          <div className="pending_quiz col">
+            <h1>
+              Congratulations! <br />
+              {eventInfo?.winner?.[`quiz${quizNo}`]?.name}
+            </h1>
+            <em>
+              “Your quick thinking and sharp answers paid off. Enjoy your
+              Skyworth prize!”
+            </em>
+          </div>
+          <div className="quiz_body col">
+            {quizzes?.map((item, index) => (
+              <Question
+                key={index}
+                data={{ ...item, index }}
+                selectedAns={answers[index]}
+                setAns={(ans) => setQuizAnswer(quizNo, index, ans)}
+                quizNo={quizNo}
+                showAnswer={true}
+              />
+            ))}
+            {eventInfo?.me?.[`quiz${quizNo}`] == null && (
+              <>
+                {!answers.includes(null) && (
+                  <button className="cta_btn" onClick={handleSubmit}>
+                    Submit
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </>
       )}
 
       {eventInfo?.status == "ongoing" && (
@@ -94,7 +145,7 @@ function Quiz({ quizNo = 1 }) {
     </div>
   );
 }
-function Question({ data, setAns, selectedAns, quizNo }) {
+function Question({ data, setAns, selectedAns, quizNo, showAnswer }) {
   const eventInfo = useMcaStore((state) => state.eventInfo);
   const setShowLogin = useMcaStore((state) => state.setShowLogin);
 
@@ -145,46 +196,76 @@ function Question({ data, setAns, selectedAns, quizNo }) {
         <span>{data.index + 1}.</span>
         <p>{data.question}</p>
       </div>
-      {data.type == "multiple" && <em>*Multiple choices question</em>}
-
-      <div className="options col">
-        {submittedAns == null
-          ? data.options.map((option, i) => (
-              <div
-                key={i}
-                className={`option row ${
-                  isSelected(i) ? "selected_option" : ""
-                }`}
-                onClick={() => handleSelect(i)}
-              >
-                <span>{getAlphabetByNumber(i)} -</span>
-                <p>{option}</p>
-              </div>
-            ))
-          : data.options.map((option, i) => {
-              let my_ans = submittedAns[data.index];
-
-              if (Array.isArray(my_ans)) {
-                if (my_ans.includes(i)) {
-                  return (
-                    <div key={i} className={`option row submmited_ans`}>
-                      <span>{getAlphabetByNumber(i)} -</span>
-                      <p>{option}</p>
-                      <em>Your Answer</em>
-                    </div>
-                  );
-                }
-              }
-              if (my_ans == i)
+      {showAnswer ? (
+        <div className="options col">
+          {data.options.map((option, i) => {
+            let answer = data.answer;
+            if (Array.isArray(answer)) {
+              if (answer.includes(i))
                 return (
-                  <div key={i} className={`option row submmited_ans`}>
+                  <div key={i} className={`option row`}>
                     <span>{getAlphabetByNumber(i)} -</span>
                     <p>{option}</p>
-                    <em>Your Answer</em>
+                    <em>Correct Answer</em>
                   </div>
                 );
-            })}
-      </div>
+            }
+
+            if (answer == i)
+              return (
+                <div key={i} className={`option row`}>
+                  <span>{getAlphabetByNumber(i)} -</span>
+                  <p>{option}</p>
+
+                  <em>Correct Answer</em>
+                </div>
+              );
+          })}
+        </div>
+      ) : (
+        <>
+          {data.type == "multiple" && <em>*Multiple choices question</em>}
+
+          <div className="options col">
+            {submittedAns == null
+              ? data.options.map((option, i) => (
+                  <div
+                    key={i}
+                    className={`option row ${
+                      isSelected(i) ? "selected_option" : ""
+                    }`}
+                    onClick={() => handleSelect(i)}
+                  >
+                    <span>{getAlphabetByNumber(i)} -</span>
+                    <p>{option}</p>
+                  </div>
+                ))
+              : data.options.map((option, i) => {
+                  let my_ans = submittedAns[data.index];
+
+                  if (Array.isArray(my_ans)) {
+                    if (my_ans.includes(i)) {
+                      return (
+                        <div key={i} className={`option row submmited_ans`}>
+                          <span>{getAlphabetByNumber(i)} -</span>
+                          <p>{option}</p>
+                          <em>Your Answer</em>
+                        </div>
+                      );
+                    }
+                  }
+                  if (my_ans == i)
+                    return (
+                      <div key={i} className={`option row submmited_ans`}>
+                        <span>{getAlphabetByNumber(i)} -</span>
+                        <p>{option}</p>
+                        <em>Your Answer</em>
+                      </div>
+                    );
+                })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

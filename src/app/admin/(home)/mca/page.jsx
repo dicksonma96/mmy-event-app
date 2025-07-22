@@ -33,6 +33,10 @@ function MCA() {
     GetEventInfo();
   }, []);
 
+  useEffect(() => {
+    console.log(eventInfo);
+  }, [eventInfo]);
+
   const FilteredGuests = () => {
     if (searchTerm == "") return eventInfo?.guests;
 
@@ -335,6 +339,11 @@ function SetWinner({ quizNo }) {
   const [winner, setWinner] = useState(null);
   const eventInfo = useMcaAdminStore((s) => s.eventInfo);
   const official_ans = eventInfo?.[`quiz${quizNo}`].map((q) => q.answer);
+  const UpdateQuizWinner = useMcaAdminStore((s) => s.UpdateQuizWinner);
+
+  useEffect(() => {
+    if (eventInfo?.winner) setWinner(eventInfo.winner[`quiz${quizNo}`]);
+  }, [eventInfo]);
 
   function getQuizScore(guest) {
     if (guest == null) return 0;
@@ -376,8 +385,36 @@ function SetWinner({ quizNo }) {
     setWinner(topGuests[randomIndex]);
   }
 
+  function updateWinner() {
+    UpdateQuizWinner({
+      quizNo: quizNo,
+      winner: winner,
+    });
+  }
+
   return (
     <div className="setwinner col">
+      <div className="col">
+        <strong>Correct Answer:</strong>
+        <div className="col">
+          {official_ans?.map((ans, index) => {
+            return (
+              <span>
+                {index + 1})
+                {ans
+                  .toString()
+                  .split("")
+                  ?.map((a) => getAlphabetByNumber(a))}{" "}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <br />
+      <hr />
+      <br />
+
       <h4>Quiz {quizNo} Winner</h4>
       <div
         className="row"
@@ -392,7 +429,14 @@ function SetWinner({ quizNo }) {
         >
           🎲
         </span>
-        <div className="btn1">Save</div>
+
+        <button
+          className="btn1"
+          onClick={updateWinner}
+          disabled={eventInfo?.winner[`quiz${quizNo}`].seat == winner?.seat}
+        >
+          Update
+        </button>
       </div>
       <div className="guest_list">
         <div className="user_table col">

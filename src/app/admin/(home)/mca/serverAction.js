@@ -4,7 +4,7 @@ import * as Ably from "ably";
 import { MCA_ABLY_CHAT_CHANNEL } from "@/lib/constant";
 //--------------Workshops---------------------------
 
-async function AblySendMessage(msg_name, data) {
+async function AblySendMessage(msg_name, data = null) {
   const channelName = MCA_ABLY_CHAT_CHANNEL;
   const ably = new Ably.Rest(process.env.ABLY_API);
   const channel = ably.channels.get(channelName);
@@ -132,5 +132,45 @@ export async function UpdateEventStatus(status) {
   } catch (e) {
     console.error("UpdateEventStatus error:", e);
     return { success: false, message: e.message || "Failed to update status" };
+  }
+}
+
+/**
+ * @param {Object} data - Winner data
+ * @param {number} data.quizNo - Quiz number (1 or 2)
+ * @param {Object} data.winner - Winner details { name, seat, brand }
+ */
+export async function UpdateQuizWinner({ quizNo, winner }) {
+  if (![1, 2].includes(quizNo)) {
+    return { success: false, message: "Invalid quiz number" };
+  }
+
+  try {
+    const db = await getDatabase();
+    const eventConfig = db.collection("event_config");
+
+    const result = await eventConfig.updateOne(
+      { event: "mca" },
+      { $set: { [`winner.quiz${quizNo}`]: winner } }
+    );
+
+    if (result.modifiedCount === 1) {
+      AblySendMessage("update-status");
+      return {
+        success: true,
+        message: `Winner for Quiz ${quizNo} updated successfully`,
+      };
+    } else {
+      return {
+        success: false,
+        message: "No changes made or event not found",
+      };
+    }
+  } catch (e) {
+    console.error("UpdateQuizWinner error:", e);
+    return {
+      success: false,
+      message: e.message || "Failed to update winner",
+    };
   }
 }

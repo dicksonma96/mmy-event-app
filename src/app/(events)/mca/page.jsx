@@ -38,11 +38,6 @@ export default function Home() {
     GetEventInfo();
   }, []);
 
-  const userInfo = {
-    brand: "test",
-    name: "Jinny",
-    seat: "10-05",
-  };
   return (
     <>
       {loading && (

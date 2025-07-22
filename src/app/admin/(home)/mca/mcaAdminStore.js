@@ -5,6 +5,7 @@ import {
   UpdateGuest as UpdateGuestServer,
   DeleteGuest as DeleteGuestServer,
   UpdateEventStatus as UpdateEventStatusServer,
+  UpdateQuizWinner as UpdateQuizWinnerServer,
 } from "./serverAction";
 import toast from "react-hot-toast";
 
@@ -109,6 +110,30 @@ const useMcaAdminStore = create((set, get) => ({
       }
     } catch (e) {
       alert(e.message);
+    } finally {
+      get().setLoading(false);
+    }
+  },
+
+  //{ quizNo, winner }
+  UpdateQuizWinner: async (info) => {
+    try {
+      get().setLoading(true);
+      let res = await UpdateQuizWinnerServer(info);
+      if (res.success) {
+        get().setEventInfo({
+          ...get().eventInfo,
+          winner: {
+            ...get().eventInfo.winner,
+            [`quiz${info.quizNo}`]: info.winner,
+          },
+        });
+        toast.success(res.message);
+      } else {
+        throw { message: res.message };
+      }
+    } catch (e) {
+      toast.error(e.message);
     } finally {
       get().setLoading(false);
     }
