@@ -2,27 +2,26 @@
 import React from "react";
 import Agenda from "@/assets/img/parentcraft/agenda.png";
 import Speakers from "@/assets/img/parentcraft/speakers.png";
-import Events from "@/assets/img/parentcraft/events.png";
 import Slides from "@/assets/img/parentcraft/slides.png";
-import App from "@/assets/img/parentcraft/our_app.png";
 import Zoom from "@/assets/img/parentcraft/zoom.png";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/app/customHooks/useLanguage";
 
-function HomeNav() {
+function HomeNav({ setNav, activeNav }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const basePath = "/parentcraft";
   const nav = [
     {
       icon: Agenda,
       route: basePath,
-      module: "Agenda",
+      module: "agenda",
     },
     {
       icon: Speakers,
       route: basePath + "/contributors",
-      module: "Contributors",
+      module: "contributors",
     },
     // {
     //   icon: Events,
@@ -32,29 +31,30 @@ function HomeNav() {
     {
       icon: Slides,
       route: basePath + "/slides",
-      module: "Slides",
+      module: "slides",
     },
     {
       icon: Zoom,
       route: basePath + "/zoom",
-      module: "Zoom",
+      module: "zoom",
     },
   ];
 
   return (
     <div className="home_nav row">
       {nav.map((item, index) => (
-        <Link
+        <div
           key={index}
-          href={item.route}
           className={`${
-            pathname == item.route ? "nav_active" : ""
+            activeNav == item.module ? "nav_active" : ""
           } nav_item col`}
-          target={item.target ? item.target : "_self"}
+          onClick={() => {
+            setNav(item.module);
+          }}
         >
           <Image src={item.icon} alt={`${item.module} icon`} />
-          <span>{item.module}</span>
-        </Link>
+          <span>{t(`parentcraft.${item.module}`)}</span>
+        </div>
       ))}
     </div>
   );

@@ -38,11 +38,11 @@ function Parentcraft() {
       </div>
       <div className="modules parentcraft_modules">
         <ParentcraftContextProvider>
-          <Workshop />
-          <Contributors />
+          {/* <Workshop />
+          <Contributors /> */}
           {/* <Events /> */}
           <AdminSlides />
-          <ZoomLink />
+          {/* <ZoomLink /> */}
         </ParentcraftContextProvider>
       </div>
     </div>
