@@ -4,15 +4,30 @@ import ChatIllustration from "@/assets/img/parentcraft/chat_illustration.png";
 import Image from "next/image";
 import Modal from "../component/Modal";
 import { useChannel, usePresenceListener, usePresence } from "ably/react";
-import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
+import {
+  PARENTCRAFT_ABLY_CHAT_CHANNEL,
+  PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+} from "@/lib/constant";
 import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";
 import "./chat.css";
 import epochToDateTime from "@/lib/epochToDateTime";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { SaveMessage } from "./serverAction";
+import { useSearchParams } from "next/navigation";
+import { useLanguage } from "@/app/customHooks/useLanguage";
+
+const channelNameMap = {
+  eng: PARENTCRAFT_ABLY_CHAT_CHANNEL,
+  cn: PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+};
 
 function Chat() {
+  const searchParams = useSearchParams();
+  const lang = searchParams.get("lang") || "eng";
+
+  const { t } = useLanguage(lang);
+
   const [error, setError] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState(null);
@@ -21,15 +36,15 @@ function Chat() {
   const [chatLog, setChatLog] = useState([]);
 
   const { channel, publish, connectionError, channelError } = useChannel(
-    PARENTCRAFT_ABLY_CHAT_CHANNEL,
+    channelNameMap[lang],
     (message) => {
       console.log(message);
       if (message.name == "history-cleared") setChatLog([]);
       else setChatLog((prev) => [message, ...prev]);
     }
   );
-  const { updateStatus } = usePresence(PARENTCRAFT_ABLY_CHAT_CHANNEL, "online");
-  const { presenceData } = usePresenceListener(PARENTCRAFT_ABLY_CHAT_CHANNEL);
+  const { updateStatus } = usePresence(channelNameMap[lang], "online");
+  const { presenceData } = usePresenceListener(channelNameMap[lang]);
 
   const fetchHistoryMsg = async () => {
     try {
@@ -107,11 +122,13 @@ function Chat() {
             <span className="material-symbols-outlined">forum</span>
           </div>
           <div className="header_text col">
-            <span>Parentcraft Chatroom</span>
-            <span className="status">{presenceData?.length} online</span>
+            <span>{t("parentcraft.parentcraft_chatroom")}</span>
+            <span className="status">
+              {presenceData?.length} {t("parentcraft.online")}
+            </span>
           </div>
           <div onClick={showNameModal} className="update_name s_btn">
-            Update Name
+            {t("parentcraft.update_name")}
           </div>
         </div>
         {mounted ? (
@@ -123,17 +140,17 @@ function Chat() {
           ) : (
             <div className="start_chat col">
               <Image src={ChatIllustration} alt="chat" />
-              <h2>JOIN THE CONVERSATION!</h2>
-              <p>Be Part of the Discussion: Enter the Chat Now!</p>
+              <h2>{t("parentcraft.join_conversation")}</h2>
+              <p>{t("parentcraft.join_conversation_desc")}</p>
 
               <div className="btn1" onClick={showNameModal}>
-                Chat Now
+                {t("parentcraft.chat_now")}
               </div>
             </div>
           )
         ) : (
           <div style={{ display: "grid", placeItems: "center", flex: 1 }}>
-            Connecting...
+            {t("parentcraft.update_name")}
           </div>
         )}
       </div>
@@ -151,11 +168,14 @@ function Chat() {
                   : {}
               }
             >
-              <span className="label">Tell us your name 😊</span>
+              <span className="label">
+                {t("parentcraft.tell_us_your_name")}
+                😊
+              </span>
               <input
                 type="text"
                 name="name"
-                placeholder="Your Name"
+                placeholder={t("parentcraft.your_name")}
                 required={!chatAnony}
               />
             </div>
@@ -167,15 +187,15 @@ function Chat() {
               <span className="material-symbols-outlined">
                 {chatAnony ? "check_box" : "check_box_outline_blank"}
               </span>
-              <span>Chat Anonymously</span>
+              <span>{t("parentcraft.chat_anonymously")}</span>
             </div>
 
             <div className="row btns">
               <div className="btn_cancel" onClick={closeNameModal}>
-                Cancel
+                {t("parentcraft.cancel")}
               </div>
               <button className="btn1" type="submit">
-                Chat Now
+                {t("parentcraft.chat_now")}
               </button>
             </div>
           </form>

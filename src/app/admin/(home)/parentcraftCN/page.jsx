@@ -15,7 +15,7 @@ function Parentcraft() {
         <Link
           style={{ marginLeft: "auto" }}
           className="view_btn btn1"
-          href={"/parentcraftCN"}
+          href={"/parentcraft?lang=cn"}
           target="_blank"
         >
           View Site
@@ -38,11 +38,11 @@ function Parentcraft() {
       </div>
       <div className="modules parentcraft_modules">
         <ParentcraftContextProvider>
-          <Workshop />
-          <Contributors />
+          {/* <Workshop /> */}
+          {/* <Contributors /> */}
           {/* <Events /> */}
           <AdminSlides />
-          <ZoomLink />
+          {/* <ZoomLink /> */}
         </ParentcraftContextProvider>
       </div>
     </div>

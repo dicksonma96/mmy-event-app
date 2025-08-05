@@ -1,0 +1,25 @@
+{
+  "parentcraft": {
+    "welcome_to": "欢迎来到",
+    "motherhood_parentcraft": "Motherhood Parentcraft",
+    "agenda": "议程",
+    "contributors": "演讲者",
+    "slides": "演示文稿",
+    "zoom": "Zoom",
+    "today_agenda": "今日议程",
+    "slides_today": "今日演示文稿",
+    "speakers_today": "今日讲者",
+    "sponsors_today": "今日赞助商",
+    "parentcraft_chatroom": "Parentcraft 聊天室",
+    "join_conversation": "加入对话",
+    "join_conversation_desc": "参与讨论：立即进入聊天室！",
+    "chat_now": "立即聊天",
+    "update_name": "更新名字",
+    "tell_us_your_name": "告诉我们您的姓名",
+    "your_name": "您的姓名",
+    "chat_anonymously": "匿名聊天",
+    "cancel": "取消",
+    "online": "在线",
+    "connecting": "连接中..."
+  }
+}

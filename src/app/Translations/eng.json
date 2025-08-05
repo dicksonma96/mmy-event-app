@@ -7,7 +7,19 @@
     "slides": "Slides",
     "zoom": "Zoom",
     "today_agenda": "Today's Agenda",
+    "slides_today": "Slides Today",
     "speakers_today": "Speakers Today",
-    "sponsors_today": "Sponsors Today"
+    "sponsors_today": "Sponsors Today",
+    "parentcraft_chatroom": "Parentcraft Chatroom",
+    "join_conversation": "JOIN THE CONVERSATION",
+    "join_conversation_desc": "Be Part of the Discussion: Enter the Chat Now!",
+    "chat_now": "Chat Now",
+    "update_name": "Update Your Name",
+    "tell_us_your_name": "Tell us your name",
+    "your_name": "Your Name",
+    "chat_anonymously": "Chat Anonymously",
+    "cancel": "Cancel",
+    "online": "online",
+    "connecting": "Connecting..."
   }
 }

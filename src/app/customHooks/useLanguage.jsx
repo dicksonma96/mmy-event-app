@@ -6,7 +6,7 @@ export function useLanguage() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    let langParam = new URLSearchParams(window.location.search).get("language");
+    let langParam = new URLSearchParams(window.location.search).get("lang");
     if (langParam) {
       i18n.changeLanguage(langParam);
     } else {
