@@ -25,7 +25,7 @@ export default function Home() {
       <Link style={buttonStyle} href={"/parentcraft"}>
         Parentcraft EN
       </Link>
-      <Link style={buttonStyle} href={"/parentcraftCN"}>
+      <Link style={buttonStyle} href={"/parentcraft?lang=cn"}>
         Parentcraft CN
       </Link>
     </div>

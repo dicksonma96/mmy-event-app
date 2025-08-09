@@ -7,6 +7,7 @@ import { useChannel, usePresenceListener, usePresence } from "ably/react";
 import {
   PARENTCRAFT_ABLY_CHAT_CHANNEL,
   PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+  PARENTCRAFT_BM_ABLY_CHAT_CHANNEL
 } from "@/lib/constant";
 import { getCookie, setCookie, hasCookie } from "cookies-next";
 import daysToSeconds from "@/lib/daysToSeconds";

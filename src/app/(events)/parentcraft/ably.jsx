@@ -5,6 +5,7 @@ import {
   ABLY_API,
   PARENTCRAFT_ABLY_CHAT_CHANNEL,
   PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+  PARENTCRAFT_BM_ABLY_CHAT_CHANNEL,
 } from "@/lib/constant";
 import * as Ably from "ably";
 import { AblyProvider, ChannelProvider } from "ably/react";
@@ -21,6 +22,7 @@ const uidName = {
 const channelNameMap = {
   eng: PARENTCRAFT_ABLY_CHAT_CHANNEL,
   cn: PARENTCRAFT_CN_ABLY_CHAT_CHANNEL,
+  bm: PARENTCRAFT_BM_ABLY_CHAT_CHANNEL,
 };
 
 function getId(lang = "eng") {

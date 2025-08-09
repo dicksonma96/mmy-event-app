@@ -3,6 +3,7 @@ export const ABLY_API =
   "JzrrmQ.5c-diQ:Rbcquth8SOjDPS9hKYOj3Y8UcpjC1m0tb8tFNnsQWp0";
 export const PARENTCRAFT_ABLY_CHAT_CHANNEL = "parentcraft:chat-channel";
 export const PARENTCRAFT_CN_ABLY_CHAT_CHANNEL = "parentcraftCN:chat-channel";
+export const PARENTCRAFT_BM_ABLY_CHAT_CHANNEL = "parentcraftBM:chat-channel";
 export const MCA_ABLY_CHAT_CHANNEL = "mca:chat-channel";
 
 export const not_found_img =
