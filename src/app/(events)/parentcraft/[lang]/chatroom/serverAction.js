@@ -1,0 +1,44 @@
+"use server";
+import getDatabase from "@/lib/mongo/mongoConnection";
+import * as Ably from "ably";
+import { PARENTCRAFT_ABLY_CHAT_CHANNEL } from "@/lib/constant";
+
+// Server-side action callable by the client
+export async function SaveMessage(lang, messageInfo) {
+  const eventName = {
+    eng: "parentcraft",
+    cn: "parentcraftCN",
+    bm: "parentcraftBM",
+  };
+
+  const chatlogDoc = {
+    eng: "parentcraft-chatlog",
+    cn: "parentcraftCN-chatlog",
+    bm: "parentcraftBM-chatlog",
+  };
+
+  const db = await getDatabase();
+  const eventConfig = await db.collection("event_config");
+
+  const currentWorkshop = await eventConfig.findOne({ event: eventName[lang] });
+  if (currentWorkshop == null || currentWorkshop?.agenda == null)
+    return { success: false, message: "No active workshop found" };
+
+  const collection = await db.collection(chatlogDoc[lang]);
+  if (!messageInfo || messageInfo.message == "") {
+    return { success: false, message: "Message content is required" };
+  }
+  const result = await collection.updateOne(
+    { date: messageInfo.date },
+    { $push: { messages: messageInfo } },
+    {
+      upsert: true,
+    }
+  );
+  if (result.matchedCount === 0) {
+    if (result.upsertedCount === 0)
+      return { success: false, message: "Failed to send message" };
+  }
+
+  return { success: true };
+}

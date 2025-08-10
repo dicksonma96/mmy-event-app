@@ -28,6 +28,9 @@ export default function Home() {
       <Link style={buttonStyle} href={"/parentcraft?lang=cn"}>
         Parentcraft CN
       </Link>
+      <Link style={buttonStyle} href={"/parentcraft?lang=bm"}>
+        Parentcraft BM
+      </Link>
     </div>
   );
 }

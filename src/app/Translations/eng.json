@@ -20,6 +20,9 @@
     "chat_anonymously": "Chat Anonymously",
     "cancel": "Cancel",
     "online": "online",
-    "connecting": "Connecting..."
+    "connecting": "Connecting...",
+    "join_us_on": "Join Us On",
+    "zoom_meeting": "ZOOM Meeting",
+    "stay_tuned": "Stay Tuned"
   }
 }

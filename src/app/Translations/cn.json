@@ -20,6 +20,9 @@
     "chat_anonymously": "匿名聊天",
     "cancel": "取消",
     "online": "在线",
-    "connecting": "连接中..."
+    "connecting": "连接中...",
+    "join_us_on": "加入我们的",
+    "zoom_meeting": "ZOOM 会议",
+    "stay_tuned": "敬请关注"
   }
 }

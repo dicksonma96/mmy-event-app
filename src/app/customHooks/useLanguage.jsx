@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../Translations/i18n";
+import { useParams } from "next/navigation";
 
 export function useLanguage() {
   const { t } = useTranslation();
-
+  const { lang } = useParams();
   useEffect(() => {
-    let langParam = new URLSearchParams(window.location.search).get("lang");
-    if (langParam) {
-      i18n.changeLanguage(langParam);
+    if (lang) {
+      i18n.changeLanguage(lang);
     } else {
       i18n.changeLanguage("eng");
     }
