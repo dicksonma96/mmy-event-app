@@ -22,13 +22,13 @@ export default function Home() {
         gap: "10px",
       }}
     >
-      <Link style={buttonStyle} href={"/parentcraft"}>
+      <Link style={buttonStyle} href={"/parentcraft/eng"}>
         Parentcraft EN
       </Link>
-      <Link style={buttonStyle} href={"/parentcraft?lang=cn"}>
+      <Link style={buttonStyle} href={"/parentcraft/cn"}>
         Parentcraft CN
       </Link>
-      <Link style={buttonStyle} href={"/parentcraft?lang=bm"}>
+      <Link style={buttonStyle} href={"/parentcraft/bm"}>
         Parentcraft BM
       </Link>
     </div>
