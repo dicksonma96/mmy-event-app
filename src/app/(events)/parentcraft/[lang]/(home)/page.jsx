@@ -47,6 +47,7 @@ function Parentcraft({ params }) {
         const slidesData = await GetSpeakerSlides(lang);
         if (slidesData.success) {
           setSlides(slidesData.data);
+          console.log(slidesData.data);
         } else {
           throw new Error(slidesData.message || "Failed to fetch slides");
         }
@@ -176,6 +177,7 @@ function Zoom({ link_html }) {
 function SlideListing({ data }) {
   const { t } = useLanguage();
   const [slideUrl, setSlideUrl] = useState(null);
+
   return (
     <>
       {slideUrl && (
@@ -197,20 +199,30 @@ function SlideListing({ data }) {
       )}
       <section className="section col">
         <div className="section_title">{t("parentcraft.slides_today")}</div>
-        <div className="slides_list col">
-          {data?.speaker_slides?.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="slide_item row"
-                onClick={() => setSlideUrl(item.slides_url)}
-              >
-                {item.slides_name}
-                <span className="material-symbols-outlined">chevron_right</span>
-              </div>
-            );
-          })}
-        </div>
+        {data?.disable_client_slides ? (
+          <div className="page_loader row">
+            <span style={{ margin: "auto", fontSize: "1em" }}>
+              {t("parentcraft.stay_tuned")}
+            </span>
+          </div>
+        ) : (
+          <div className="slides_list col">
+            {data?.speaker_slides?.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className="slide_item row"
+                  onClick={() => setSlideUrl(item.slides_url)}
+                >
+                  {item.slides_name}
+                  <span className="material-symbols-outlined">
+                    chevron_right
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </>
   );

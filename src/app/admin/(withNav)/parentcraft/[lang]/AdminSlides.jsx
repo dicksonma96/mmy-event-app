@@ -1,6 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getSpeakerSlides, updateSpeakerSlides } from "./serverAction";
+import {
+  getSpeakerSlides,
+  updateSpeakerSlides,
+  hideSlide,
+} from "./serverAction";
 import ErrorModule from "../../ErrorModule";
 import { useParams } from "next/navigation";
 
@@ -18,7 +22,7 @@ function AdminSlides() {
       setLoading(true);
       let res = await getSpeakerSlides(lang);
       if (!res.success) throw res.message;
-
+      console.log(res);
       setData(res.data);
     } catch (e) {
       setError(e);
@@ -49,6 +53,21 @@ function AdminSlides() {
     }
   };
 
+  const UpdateStatus = async (flag) => {
+    try {
+      setLoading(true);
+
+      let res = await hideSlide(lang, flag);
+      if (!res.success) throw res.message;
+
+      GetData();
+    } catch (e) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="module speaker_slide col">
       {error ? (
@@ -69,6 +88,7 @@ function AdminSlides() {
             <>
               <div className="module_header row">
                 <h2>SPEAKER'S SLIDES</h2>
+
                 <div
                   onClick={handleUpdate}
                   className="btn1"
@@ -84,8 +104,25 @@ function AdminSlides() {
                   ADD SLIDES
                 </div>
               </div>
+              <div
+                className="status col"
+                style={{ marginLeft: "auto", marginBottom: "15px" }}
+              >
+                <span style={{ fontSize: "12px" }}>User Slides View:</span>
+                <div
+                  className={`row toggle_btn ${
+                    !data?.disable_client_slides ? "toggleActive" : ""
+                  }`}
+                  onClick={() => UpdateStatus(!data?.disable_client_slides)}
+                >
+                  <span>Enable</span>
+                  <span>Disable</span>
+                  <div className="ball"></div>
+                </div>
+              </div>
+
               <form className="col admin_form">
-                {data.map((item, index) => (
+                {data?.speaker_slides?.map((item, index) => (
                   <div key={index} className="speaker_slide_item col">
                     <div
                       className="remove"

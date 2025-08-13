@@ -5,6 +5,7 @@ export async function GetSpeakerSlides(lang = "eng") {
   const eventLang = {
     eng: "parentcraft",
     cn: "parentcraftCN",
+    bm: "parentcraftBM",
   };
 
   const db = await getDatabase();
@@ -16,9 +17,10 @@ export async function GetSpeakerSlides(lang = "eng") {
     return { success: false, message: "No active event found" };
   }
 
-  const { speaker_slides } = event;
+  const { disable_client_slides, speaker_slides } = event;
 
   const data = {
+    disable_client_slides,
     speaker_slides,
   };
 

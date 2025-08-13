@@ -491,25 +491,17 @@ export async function getSpeakerSlides(lang) {
 
   try {
     const db = await getDatabase();
-    const collection = db.collection("event_config");
-    let data = await collection
-      .aggregate([
-        {
-          $match: {
-            event: { $eq: doc[lang] },
-          },
-        },
-        {
-          $project: {
-            speaker_slides: 1,
-          },
-        },
-      ])
-      .toArray();
-    data = data[0].speaker_slides;
-    let return_data = JSON.parse(JSON.stringify(data));
+    const eventConfig = db.collection("event_config");
+    const event = await eventConfig.findOne({ event: doc[lang] });
 
-    return { success: true, data: return_data };
+    const { disable_client_slides, speaker_slides } = event;
+
+    const data = {
+      disable_client_slides,
+      speaker_slides,
+    };
+
+    return { success: true, data: data };
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -532,6 +524,31 @@ export async function updateSpeakerSlides(lang, input) {
       {
         $set: {
           speaker_slides: input,
+        },
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+export async function hideSlide(lang, flag) {
+  const doc = {
+    eng: "parentcraft",
+    cn: "parentcraftCN",
+    bm: "parentcraftBM",
+  };
+  try {
+    const db = await getDatabase();
+    const collection = await db.collection("event_config");
+    await collection.updateOne(
+      {
+        event: doc[lang],
+      },
+      {
+        $set: {
+          disable_client_slides: flag,
         },
       }
     );
